@@ -13,3 +13,5 @@ outputs/
 .mmv_git/
 
 mmv_gitdata/
+
+!inst/examples/figures/*.png
