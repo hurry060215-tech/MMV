@@ -1,0 +1,3 @@
+task,input,output_file,style_mode,plot_mode,overlay_trajectory
+watermaze,inst/templates/watermaze_template.csv,watermaze_demo.png,thisplot,line_gradient,FALSE
+minefield,inst/templates/minefield_template.csv,minefield_demo.png,thisplot,heatmap_only,TRUE

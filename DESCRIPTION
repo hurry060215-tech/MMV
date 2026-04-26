@@ -1,0 +1,31 @@
+Package: MMV
+Type: Package
+Title: Visualization Toolkit for Water Maze and Minefield Tasks
+Version: 0.1.0
+Authors@R: 
+    c(person(given = "Haoliang",
+             family = "Zhu",
+             role = c("aut", "cre"),
+             email = "haoliang@example.com"))
+Description: R-first plotting toolkit for behavior trajectory visualization.
+    It supports two independent tasks (water maze and minefield) with a
+    common CSV schema, automatic plotting, batch rendering, thisplot-aware
+    themes, and optional Python extension hooks via
+    reticulate.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+    cowplot,
+    dplyr,
+    ggplot2,
+    grDevices,
+    stats,
+    utils
+Suggests:
+    reticulate,
+    testthat (>= 3.0.0),
+    thisplot,
+    yaml
+Config/testthat/edition: 3

@@ -1,0 +1,26 @@
+url: https://YOUR_GITHUB_USERNAME.github.io/MMV/
+template:
+  bootstrap: 5
+  bslib:
+    bootswatch: flatly
+
+home:
+  title: MMV
+  description: R-first toolkit for water maze and minefield trajectory visualization.
+
+reference:
+  - title: Main plotting API
+    contents:
+      - plot_watermaze
+      - plot_minefield
+      - plot_batch
+  - title: Styling and runtime
+    contents:
+      - theme_mmviz
+      - load_visual_runtime
+      - use_python_backend
+  - title: Data I/O
+    contents:
+      - read_mmviz_csv
+      - convert_mmviz_csv
+      - convert_mmviz_folder

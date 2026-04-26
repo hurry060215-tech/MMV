@@ -1,0 +1,17 @@
+style_mode: thisplot
+figure_width: 16
+figure_height: 4.2
+dpi: 300
+panel_per_row: 4
+output_format: png
+
+watermaze:
+  plot_mode: line_gradient
+  background_color: "#1E3277"
+  guide_color: "#A7BFEF"
+  overlay_trajectory: false
+
+minefield:
+  plot_mode: heatmap_only
+  background_color: "#0F1B3D"
+  overlay_trajectory: false

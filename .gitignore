@@ -1,0 +1,15 @@
+.Rhistory
+.RData
+.Rproj.user/
+.DS_Store
+.idea/
+.vscode/
+*.Rproj
+*.tar.gz
+*.png
+*.pdf
+outputs/
+
+.mmv_git/
+
+mmv_gitdata/
