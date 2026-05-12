@@ -9,9 +9,8 @@ Authors@R:
              email = "haoliang@example.com"))
 Description: R-first plotting toolkit for behavior trajectory visualization.
     It supports two independent tasks (water maze and minefield) with a
-    common CSV schema, automatic plotting, batch rendering, thisplot-aware
-    themes, and optional Python extension hooks via
-    reticulate.
+    common CSV schema, automatic plotting, batch rendering, and thisplot-aware
+    themes.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -24,7 +23,6 @@ Imports:
     stats,
     utils
 Suggests:
-    reticulate,
     testthat (>= 3.0.0),
     thisplot,
     yaml

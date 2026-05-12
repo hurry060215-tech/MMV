@@ -14,6 +14,12 @@ MMV focuses on:
 |---|---|
 | ![Water Maze Demo](inst/examples/figures/watermaze_demo.png) | ![Minefield Demo](inst/examples/figures/minefield_demo.png) |
 
+Real legacy-file examples (your raw coordinate style):
+
+| SAH (Legacy CSV) | NM (Legacy CSV) |
+|---|---|
+| ![SAH Real Demo](inst/examples/figures/watermaze_sah4_real.png) | ![NM Real Demo](inst/examples/figures/watermaze_nm5_real.png) |
+
 ## Install
 
 ```r
@@ -24,8 +30,7 @@ library(MMV)
 
 Optional dependencies:
 ```r
-install.packages(c("ggplot2", "dplyr", "cowplot", "testthat"))
-install.packages(c("reticulate", "yaml"))
+install.packages(c("ggplot2", "dplyr", "cowplot", "testthat", "yaml"))
 ```
 
 ## Quick Demo (Copy and Run)
@@ -117,6 +122,11 @@ Default is `thisplot` with automatic fallback.
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/publish_mmv_github.ps1
+```
+
+If your current folder has git lock/permission issues, use the temp-path publisher:
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/publish_mmv_from_temp.ps1
 ```
 
 ## pkgdown Setup
