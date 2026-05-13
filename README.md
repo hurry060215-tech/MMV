@@ -2,70 +2,64 @@
 
 R-first toolkit for automatic visualization of **water maze** and **minefield** trajectory tasks.
 
-`MMV` is designed for:
-- standard CSV input
-- explicit conversion from legacy trajectory CSV
-- two main user-facing plotting functions
-- default `thisplot` style with builtin fallback
-- optional Python extension from R via `reticulate`
+MMV focuses on:
+- a unified CSV schema
+- explicit legacy-to-standard CSV conversion
+- two direct plotting functions
+- `thisplot`-style theme integration with builtin fallback
 
-## Quick Start
+## Visual Preview
 
-### 1) Install dependencies
-```r
-install.packages(c("ggplot2", "dplyr", "cowplot", "testthat"))
-install.packages(c("reticulate", "yaml"))  # optional
-```
+| Water Maze | Minefield |
+|---|---|
+| ![Water Maze Demo](inst/examples/figures/watermaze_demo.png) | ![Minefield Demo](inst/examples/figures/minefield_demo.png) |
 
-Install `thisplot` from its repository if you want `style_mode = "thisplot"`:
-- [thisplot](https://github.com/mengxu98/thisplot)
+Real legacy-file examples (your raw coordinate style):
 
-### 2) Install MMV from GitHub
+| SAH (Legacy CSV) | NM (Legacy CSV) |
+|---|---|
+| ![SAH Real Demo](inst/examples/figures/watermaze_sah4_real.png) | ![NM Real Demo](inst/examples/figures/watermaze_nm5_real.png) |
+
+## Install
+
 ```r
 install.packages("remotes")
-remotes::install_github("YOUR_GITHUB_USERNAME/MMV")
+remotes::install_github("hurry060215-tech/MMV")
 library(MMV)
 ```
 
-PowerShell publish helper (for repository owner `hurry060215-tech`):
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/publish_mmv_github.ps1
+Optional dependencies:
+```r
+install.packages(c("ggplot2", "dplyr", "cowplot", "testthat", "yaml"))
 ```
 
-### 3) Source package files in development mode
-```r
-r_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
-invisible(lapply(r_files, source))
-```
+## Quick Demo (Copy and Run)
 
-### 4) Convert a legacy CSV (recommended first step)
 ```r
-src <- list.files("..", pattern = "^sah--4.*\\.csv$", full.names = TRUE)[1]
+wm_csv <- system.file("templates", "watermaze_template.csv", package = "MMV")
+mf_csv <- system.file("templates", "minefield_template.csv", package = "MMV")
+
+# 1) Convert to standard schema (recommended)
 cnv <- convert_mmviz_csv(
-  path = src,
+  path = wm_csv,
+  out_path = "outputs/watermaze_template_standard.csv",
   task = "watermaze",
-  out_path = "outputs/sah4_standard.csv",
   overwrite = TRUE
 )
-print(cnv)
-```
 
-### 5) Plot water maze from CSV
-```r
-p <- plot_watermaze(
-  "outputs/sah4_standard.csv",
+# 2) Water maze (line-gradient trajectory, non-gradient background)
+plot_watermaze(
+  cnv$output_file,
   cfg = list(
     style_mode = "thisplot",
     plot_mode = "line_gradient",
     out_file = "outputs/watermaze_demo.png"
   )
 )
-```
 
-### 6) Plot minefield from CSV
-```r
-p <- plot_minefield(
-  "inst/templates/minefield_template.csv",
+# 3) Minefield (heatmap + optional trajectory overlay)
+plot_minefield(
+  mf_csv,
   cfg = list(
     style_mode = "thisplot",
     overlay_trajectory = TRUE,
@@ -74,17 +68,26 @@ p <- plot_minefield(
 )
 ```
 
-### 7) Batch plotting
+Development-mode example script:
 ```r
-res <- plot_batch(
-  manifest = "inst/templates/manifest_template.csv",
-  out_dir = "outputs",
-  cfg = list(style_mode = "thisplot")
-)
-print(res)
+source("inst/examples/example_usage.R")
 ```
 
-## Input Schema (CSV)
+Helper scripts:
+- `inst/examples/example_usage.R`: minimal end-to-end example.
+- `scripts/run_examples.R`: template conversion + watermaze + minefield + batch.
+
+## Regenerate README Example Figures
+
+```r
+source("scripts/build_readme_examples.R")
+```
+
+This script writes:
+- `inst/examples/figures/watermaze_demo.png`
+- `inst/examples/figures/minefield_demo.png`
+
+## Input Schema
 
 Required columns:
 - `subject_id`
@@ -98,69 +101,41 @@ Optional columns:
 - `time_sec`
 - `event`
 
-The reader also supports legacy coordinate-stream CSV format (for example: `"233,135","233,135",...`).
-
-Batch conversion helper:
-```r
-cnv_res <- convert_mmviz_folder(
-  input_dir = "..",
-  out_dir = "outputs/converted_standard",
-  task = "watermaze",
-  pattern = "\\.csv$",
-  overwrite = TRUE
-)
-print(cnv_res)
-```
+Legacy coordinate-stream CSV is also supported (for example: `"233,135","233,135",...`).
 
 ## Main Functions
 
-- `plot_watermaze(input, cfg = list())`
-- `plot_minefield(input, cfg = list())`
 - `convert_mmviz_csv(path, out_path = NULL, task = "watermaze", overwrite = FALSE)`
 - `convert_mmviz_folder(input_dir, out_dir, task = "watermaze", ...)`
-
-`input` can be:
-- a CSV path (recommended)
-- or a data.frame with the standard columns
+- `plot_watermaze(input, cfg = list())`
+- `plot_minefield(input, cfg = list())`
+- `plot_batch(manifest, out_dir, cfg = list())`
 
 ## Style Modes
 
 - `style_mode = "thisplot"`: use `thisplot::theme_this()` and `thisplot::palette_colors()` when available.
-- `style_mode = "builtin"`: use internal fallback palette/theme.
+- `style_mode = "builtin"`: internal fallback palette/theme.
 
 Default is `thisplot` with automatic fallback.
 
-## Optional Python Backend
+## GitHub Publish Helper
 
-R is the primary runtime. If you want to add Python-based post-processing:
-```r
-use_python_backend(enable = TRUE, module = "your_module_name")
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/publish_mmv_github.ps1
 ```
 
-Then `plot_*` functions can call Python hooks through `reticulate`.
-
-## Runtime Loader for Function Extraction
-
-If you want a full runtime load plus selective function extraction:
-```r
-rt <- load_visual_runtime(
-  style_pkg = "thisplot",
-  extra_pkgs = c("stats"),
-  function_map = list(
-    thisplot = c("theme_this", "palette_colors"),
-    stats = c("median")
-  )
-)
+If your current folder has git lock/permission issues, use the temp-path publisher:
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/publish_mmv_from_temp.ps1
 ```
 
-## pkgdown Setup (GitHub Pages)
+## pkgdown Setup
 
-`pkgdown` is not automatic by GitHub itself.  
-This repo includes:
+`pkgdown` is not automatic by GitHub itself. This repo includes:
 - `_pkgdown.yml`
 - `.github/workflows/pkgdown.yaml`
 
 Before first deployment:
 1. Replace `YOUR_GITHUB_USERNAME` in `_pkgdown.yml`.
 2. Push to `main`.
-3. In GitHub repository settings, enable GitHub Pages from `gh-pages` branch.
+3. In GitHub repository settings, enable Pages from `gh-pages`.

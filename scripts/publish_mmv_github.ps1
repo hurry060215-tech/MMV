@@ -10,6 +10,7 @@ Set-Location $projectRoot
 
 $script:GitPrefix = @()
 $script:AltGitDir = "mmv_gitdata"
+$script:SavedProxyEnv = @{}
 
 function Invoke-Git {
   param(
@@ -55,6 +56,44 @@ function Invoke-CmdQuiet {
     $ErrorActionPreference = "SilentlyContinue"
     cmd /c $Command *> $null
     return $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $oldEap
+  }
+}
+
+function Clear-ProxyEnvForGit {
+  $proxyVars = @("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "GIT_HTTP_PROXY", "GIT_HTTPS_PROXY")
+  foreach ($k in $proxyVars) {
+    $val = [System.Environment]::GetEnvironmentVariable($k, "Process")
+    if ($null -ne $val -and $val -ne "") {
+      $script:SavedProxyEnv[$k] = $val
+      [System.Environment]::SetEnvironmentVariable($k, $null, "Process")
+    }
+  }
+}
+
+function Restore-ProxyEnv {
+  foreach ($k in $script:SavedProxyEnv.Keys) {
+    [System.Environment]::SetEnvironmentVariable($k, $script:SavedProxyEnv[$k], "Process")
+  }
+}
+
+function Invoke-GitOutput {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string[]]$Args
+  )
+
+  $oldEap = $ErrorActionPreference
+  try {
+    $ErrorActionPreference = "Continue"
+    $allArgs = @()
+    if ($script:GitPrefix.Count -gt 0) {
+      $allArgs += $script:GitPrefix
+    }
+    $allArgs += $Args
+    $out = & git @allArgs 2>$null
+    return ,$out
   } finally {
     $ErrorActionPreference = $oldEap
   }
@@ -132,47 +171,67 @@ function Reset-BrokenGitRepo {
   }
 }
 
-if (-not (Test-IsValidGitRepo)) {
-  Reset-BrokenGitRepo
-}
-
-if (-not (Test-IsValidGitRepo)) {
-  throw "Repository is still invalid after reinitialization."
-}
-
-Invoke-Git -Args @("add", ".github", ".gitignore", "DESCRIPTION", "LICENSE", "NAMESPACE", "R", "README.md", "_pkgdown.yml", "inst", "scripts", "tests") | Out-Null
-
-$hasCommit = $false
-$headCode = Invoke-Git -Args @("rev-parse", "--verify", "HEAD") -Quiet -AllowFailure
-if ($headCode -eq 0) {
-  $hasCommit = $true
-}
-
-if (-not $hasCommit) {
-  Invoke-Git -Args @("commit", "-m", "feat: initial MMV release (R-first watermaze/minefield visualization)") | Out-Null
-} else {
-  Invoke-Git -Args @("commit", "-m", "chore: update MMV package", "--allow-empty") | Out-Null
-}
-
-$originUrl = "https://github.com/$RepoOwner/$RepoName.git"
-$hasOrigin = $false
+Clear-ProxyEnvForGit
 try {
-  $code = Invoke-Git -Args @("remote", "get-url", "origin") -Quiet -AllowFailure
-  $existingOrigin = $null
-  if ($code -eq 0) {
-    $existingOrigin = (& git remote get-url origin 2>$null)
+  if (-not (Test-IsValidGitRepo)) {
+    Reset-BrokenGitRepo
   }
-  if ($existingOrigin) { $hasOrigin = $true }
-} catch {
+
+  if (-not (Test-IsValidGitRepo)) {
+    throw "Repository is still invalid after reinitialization."
+  }
+
+  # Avoid "detected dubious ownership" in mixed-ownership Windows folders.
+  Invoke-Git -Args @("config", "--global", "--add", "safe.directory", $projectRoot) -AllowFailure | Out-Null
+
+  Invoke-Git -Args @("add", ".github", ".gitignore", "DESCRIPTION", "LICENSE", "NAMESPACE", "R", "README.md", "_pkgdown.yml", "inst", "scripts", "tests") | Out-Null
+
+  $hasCommit = $false
+  $headCode = Invoke-Git -Args @("rev-parse", "--verify", "HEAD") -Quiet -AllowFailure
+  if ($headCode -eq 0) {
+    $hasCommit = $true
+  }
+
+  if (-not $hasCommit) {
+    Invoke-Git -Args @("commit", "-m", "feat: initial MMV release (R-first watermaze/minefield visualization)") | Out-Null
+  } else {
+    Invoke-Git -Args @("commit", "-m", "chore: update MMV package", "--allow-empty") | Out-Null
+  }
+
+  $originUrl = "https://github.com/$RepoOwner/$RepoName.git"
   $hasOrigin = $false
+  try {
+    $code = Invoke-Git -Args @("remote", "get-url", "origin") -Quiet -AllowFailure
+    $existingOrigin = $null
+    if ($code -eq 0) {
+      $existingOrigin = (Invoke-GitOutput -Args @("remote", "get-url", "origin")) -join ""
+    }
+    if ($existingOrigin) { $hasOrigin = $true }
+  } catch {
+    $hasOrigin = $false
+  }
+
+  if (-not $hasOrigin) {
+    Invoke-Git -Args @("remote", "add", "origin", $originUrl) | Out-Null
+  } else {
+    Invoke-Git -Args @("remote", "set-url", "origin", $originUrl) | Out-Null
+  }
+
+  # Force no proxy and HTTP/1.1 for flaky networks.
+  $pushCode = Invoke-Git -Args @("-c", "http.proxy=", "-c", "https.proxy=", "-c", "http.version=HTTP/1.1", "push", "-u", "origin", $Branch) -AllowFailure
+  if ($pushCode -ne 0) {
+    Start-Sleep -Seconds 2
+    $pushCode = Invoke-Git -Args @("-c", "http.proxy=", "-c", "https.proxy=", "-c", "http.version=HTTP/1.1", "push", "-u", "origin", $Branch) -AllowFailure
+    if ($pushCode -ne 0) {
+      Write-Host "Default push failed twice. Retrying with OpenSSL backend..."
+      $pushCode = Invoke-Git -Args @("-c", "http.proxy=", "-c", "https.proxy=", "-c", "http.version=HTTP/1.1", "-c", "http.sslbackend=openssl", "push", "-u", "origin", $Branch) -AllowFailure
+      if ($pushCode -ne 0) {
+        throw "git push failed after retry. Check network access/credentials for github.com."
+      }
+    }
+  }
+
+  Write-Host "Pushed to $originUrl (branch: $Branch)"
+} finally {
+  Restore-ProxyEnv
 }
-
-if (-not $hasOrigin) {
-  Invoke-Git -Args @("remote", "add", "origin", $originUrl) | Out-Null
-} else {
-  Invoke-Git -Args @("remote", "set-url", "origin", $originUrl) | Out-Null
-}
-
-Invoke-Git -Args @("push", "-u", "origin", $Branch)
-
-Write-Host "Pushed to $originUrl (branch: $Branch)"
