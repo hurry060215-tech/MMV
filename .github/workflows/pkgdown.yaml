@@ -28,6 +28,7 @@ jobs:
 
       - name: Build site
         run: |
+          Rscript -e "devtools::document()"
           Rscript -e "pkgdown::build_site()"
 
       - name: Deploy to gh-pages
