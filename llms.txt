@@ -1,5 +1,10 @@
 # MMV
 
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-245f73.svg)](https://github.com/hurry060215-tech/MMV/blob/main/LICENSE)
+[![GitHub
+Pages](https://img.shields.io/badge/docs-pkgdown-2f7d6d.svg)](https://hurry060215-tech.github.io/MMV/)
+
 R-first toolkit for automatic visualization of **water maze** and
 **minefield** trajectory tasks.
 
@@ -120,6 +125,12 @@ Legacy coordinate-stream CSV is also supported (for example:
 - `style_mode = "builtin"`: internal fallback palette/theme.
 
 Default is `thisplot` with automatic fallback.
+
+## License
+
+MMV is released under the MIT License. See
+[`LICENSE`](https://github.com/hurry060215-tech/MMV/blob/main/LICENSE)
+for the full license text.
 
 ## GitHub Publish Helper
 
