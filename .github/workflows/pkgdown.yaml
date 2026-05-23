@@ -31,6 +31,11 @@ jobs:
           Rscript -e "devtools::document()"
           Rscript -e "pkgdown::build_site()"
 
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Deploy to gh-pages
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
