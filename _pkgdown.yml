@@ -1,8 +1,27 @@
 url: https://hurry060215-tech.github.io/MMV/
 template:
   bootstrap: 5
+  light-switch: true
   bslib:
     bootswatch: flatly
+    primary: "#245f73"
+    base_font:
+      google: "Inter"
+    heading_font:
+      google: "Inter"
+
+navbar:
+  structure:
+    left: [reference, license]
+    right: [search, github]
+  components:
+    license:
+      text: License
+      href: LICENSE-text.html
+    github:
+      icon: fa-github
+      href: https://github.com/hurry060215-tech/MMV
+      aria-label: GitHub
 
 home:
   title: MMV
