@@ -12,6 +12,9 @@ Description: R-first plotting toolkit for behavior trajectory visualization.
     common CSV schema, automatic plotting, batch rendering, and thisplot-aware
     themes.
 License: MIT + file LICENSE
+URL: https://hurry060215-tech.github.io/MMV/,
+    https://github.com/hurry060215-tech/MMV
+BugReports: https://github.com/hurry060215-tech/MMV/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
