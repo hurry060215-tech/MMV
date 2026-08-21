@@ -1,5 +1,8 @@
 # MMV 0.1.0.9000
 
+- Added `mmviz_init()` for one-command starter projects and `plot_mmviz()` as
+  a unified plotting entry point.
+- Added a Getting Started article to the pkgdown site.
 - Fixed the installed package test entry point and generated complete help
   pages for every exported function.
 - Made batch manifests resolve relative inputs from the manifest directory and

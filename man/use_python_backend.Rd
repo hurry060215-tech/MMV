@@ -16,6 +16,9 @@ use_python_backend(enable = FALSE, module = NULL)
 }
 \description{
 This package is R-first. Python is optional and accessed via reticulate.
+The backend hook is experimental: an external module must provide
+\code{postprocess_track(data, task)} or \code{postprocess(data, task)}. See the online
+documentation and the linked backend-contract issue before production use.
 }
 \examples{
 use_python_backend(FALSE)

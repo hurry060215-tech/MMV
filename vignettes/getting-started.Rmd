@@ -1,0 +1,50 @@
+---
+title: "Getting started with MMV"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with MMV}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+MMV can create a complete starter folder in one command:
+
+```{r init, eval=FALSE}
+library(MMV)
+project <- mmviz_init("my-mmv-project")
+project
+```
+
+The folder contains editable water-maze and minefield CSV files, a manifest,
+an `outputs/` directory, and a standalone runner. Run it from any directory:
+
+``` bash
+Rscript my-mmv-project/run_mmviz.R
+```
+
+For a single file, use the unified plotting entry point:
+
+```{r plot, eval=FALSE}
+plot_mmviz(
+  "my-mmv-project/data/watermaze.csv",
+  task = "watermaze",
+  out_file = "my-mmv-project/outputs/watermaze.png",
+  cfg = list(style_mode = "builtin")
+)
+```
+
+The task-specific functions remain available when you need their full intent
+to be explicit:
+
+```{r specific, eval=FALSE}
+plot_watermaze("watermaze.csv", cfg = list(style_mode = "builtin"))
+plot_minefield("minefield.csv", cfg = list(style_mode = "builtin"))
+```
+
+Standard CSV files require `subject_id`, `group`, `trial_id`, `frame`, `x`, and
+`y`. Optional columns are `time_sec` and `event`. Batch manifests need `task`
+and `input`; relative inputs are resolved from the manifest directory.

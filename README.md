@@ -41,12 +41,19 @@ install.packages(c("yaml", "reticulate"))
 ## Quick Demo (Copy and Run)
 
 ```r
+library(MMV)
+
+# Easiest first run: create data templates, a manifest, and a runner.
+mmviz_init("my-mmv-project")
+# Then run: Rscript my-mmv-project/run_mmviz.R
+
 wm_csv <- system.file("templates", "watermaze_template.csv", package = "MMV")
 mf_csv <- system.file("templates", "minefield_template.csv", package = "MMV")
 
 # 1) Read and plot immediately
-plot_watermaze(
+plot_mmviz(
   wm_csv,
+  task = "watermaze",
   cfg = list(
     style_mode = "builtin",
     out_file = "outputs/watermaze_demo.png"
@@ -132,6 +139,8 @@ print(result)
 
 ## Main Functions
 
+- `mmviz_init(path = "MMV-project")`
+- `plot_mmviz(input, task, cfg = list(), out_file = NULL)`
 - `convert_mmviz_csv(path, out_path = NULL, task = "watermaze", overwrite = FALSE)`
 - `convert_mmviz_folder(input_dir, out_dir, task = "watermaze", ...)`
 - `plot_watermaze(input, cfg = list())`
@@ -144,6 +153,14 @@ print(result)
 - `style_mode = "builtin"`: internal fallback palette/theme.
 
 Default is `thisplot` with automatic fallback.
+
+## Optional Python Hook
+
+The Python post-processing hook is disabled by default and remains
+**experimental**. It requires an external module implementing
+`postprocess_track(data, task)` or `postprocess(data, task)`. Pure-R plotting is
+the supported default; follow [issue #5](https://github.com/hurry060215-tech/MMV/issues/5)
+for the versioned backend contract before relying on it in production.
 
 ## License
 
