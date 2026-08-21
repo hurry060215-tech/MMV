@@ -264,6 +264,17 @@ mmviz_safe_file_stem <- function(path) {
   if (!nzchar(stem)) "plot" else stem
 }
 
+mmviz_output_path_key <- function(path) {
+  normalized <- normalizePath(path, winslash = "/", mustWork = FALSE)
+  # Windows is case-insensitive by contract. Keep case on POSIX systems so
+  # valid destinations such as Plot.png and plot.png remain distinct on Linux.
+  if (identical(.Platform$OS.type, "windows")) {
+    tolower(normalized)
+  } else {
+    normalized
+  }
+}
+
 mmviz_save_plot <- function(plot_obj, cfg) {
   out_file <- cfg$out_file %||% NULL
   if (is.null(out_file)) {

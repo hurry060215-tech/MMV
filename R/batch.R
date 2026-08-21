@@ -99,7 +99,7 @@ plot_batch <- function(manifest, out_dir, cfg = list()) {
         error = function(e) NULL
       )
       if (is.null(candidate)) next
-      key <- tolower(normalizePath(candidate, winslash = "/", mustWork = FALSE))
+      key <- mmviz_output_path_key(candidate)
       previous <- match(key, names(seen_outputs))
       if (is.na(previous)) {
         seen_outputs <- c(seen_outputs, i)
@@ -137,10 +137,11 @@ plot_batch <- function(manifest, out_dir, cfg = list()) {
     results[[i]] <- tryCatch({
       task <- mmviz_normalize_task(task_raw)
       input_raw <- mmviz_assert_scalar_path(input_raw, "manifest input")
-      input <- if (mmviz_is_absolute_path(input_raw)) {
-        input_raw
+      expanded_input <- path.expand(input_raw)
+      input <- if (mmviz_is_absolute_path(expanded_input)) {
+        expanded_input
       } else {
-        file.path(manifest_dir, input_raw)
+        file.path(manifest_dir, expanded_input)
       }
 
       row_cfg <- mmviz_merge_cfg(mmviz_default_cfg(task), cfg)

@@ -31,6 +31,8 @@ The product audit identified these user-facing risks:
   task-specific plotting APIs.
 - Batch output collisions are reported by manifest row and do not stop later
   independent jobs.
+- Batch input paths expand `~` before manifest-relative resolution, and output
+  collision keys respect case-sensitive POSIX filesystems.
 - Output directory creation is checked and errors include actionable paths.
 - Unicode regression tests require a UTF-8-capable R locale and document the
   Windows `C.UTF-8` environment failure mode without changing global settings.
@@ -41,10 +43,12 @@ The product audit identified these user-facing risks:
 
 ## Real-data gate
 
-The repository currently has no `D:\MMV_real_data_inbox` and therefore cannot
-claim real-data format coverage yet. Before the v0.2.0 Release, the author must
-provide at least two distinct water-maze exporter files and one minefield file,
-plus exporter metadata, anonymization steps, and explicit redistribution
+The repository now has four author-directory water-maze coordinate-stream files
+in the intake and corresponding partial fixtures. They are all the same
+observed legacy family, not four distinct exporter formats. No minefield raw
+export has been located on the available D: or E: data roots. Before the v0.2.0
+Release, the author must provide at least one minefield export, confirm the
+water fixtures contain no indirect identifiers, and confirm redistribution
 permission. Raw files stay outside Git; only deterministic, minimal, anonymous
 fixtures and their provenance are committed.
 
@@ -65,6 +69,8 @@ The following checks are required before merge and release:
 6. Coverage is at least 80 percent.
 7. Windows, macOS, Ubuntu, oldrel Windows, coverage, and pkgdown checks pass on
    the pull request.
+8. The release workflow verifies exact watermaze/minefield fixture mix,
+   completed provenance, and tag/package version equality before publishing.
 
 The GitHub Release must not be created until the real-data gate and all checks
 above are complete.

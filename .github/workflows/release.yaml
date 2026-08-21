@@ -27,9 +27,22 @@ jobs:
       - name: Require real-data fixtures
         shell: bash
         run: |
-          test -d tests/testthat/fixtures/real
-          test -f tests/testthat/fixtures/real/README.md
-          test "$(find tests/testthat/fixtures/real -type f -name '*.csv' | wc -l)" -ge 3
+          fixture_dir=tests/testthat/fixtures/real
+          test -d "$fixture_dir"
+          test -f "$fixture_dir/README.md"
+          test -f "$fixture_dir/PROVENANCE.md"
+          test "$(find "$fixture_dir" -maxdepth 1 -type f -name 'watermaze__*.csv' | wc -l)" -ge 2
+          test "$(find "$fixture_dir" -maxdepth 1 -type f -name 'minefield__*.csv' | wc -l)" -ge 1
+          grep -Eiq 'sha[- ]?256' "$fixture_dir/PROVENANCE.md"
+          grep -Eiq 'permission.*(granted|confirmed|yes)' "$fixture_dir/PROVENANCE.md"
+          ! grep -Eiq 'pending|TODO|not confirmed' "$fixture_dir/PROVENANCE.md"
+
+      - name: Verify tag matches package version
+        shell: bash
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          package_version="$(awk '$1 == "Version:" {print $2}' DESCRIPTION)"
+          test "$tag_version" = "$package_version"
 
       - name: Build and check source package
         shell: bash

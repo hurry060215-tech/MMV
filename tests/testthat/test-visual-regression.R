@@ -7,6 +7,11 @@ test_that("real-data figures have deterministic SVG references", {
   )
   source_files <- source_files[!grepl("expectations|manifest", basename(source_files), ignore.case = TRUE)]
   skip_if(length(source_files) < 3L, "Real-data fixtures are pending author-provided files.")
+  skip_if(
+    sum(grepl("^watermaze__", basename(source_files))) < 2L ||
+      sum(grepl("^minefield__", basename(source_files))) < 1L,
+    "The required two water-maze plus one minefield fixture mix is incomplete."
+  )
   skip_if_not(
     requireNamespace("vdiffr", quietly = TRUE),
     "vdiffr is required for SVG visual regression tests."
