@@ -71,6 +71,6 @@ convert_mmviz_csv(source, output, overwrite = TRUE)
 #> 1 watermaze
 #>                                                             input_file
 #> 1 /home/runner/work/_temp/Library/MMV/templates/watermaze_template.csv
-#>                            output_file source_format rows
-#> 1 /tmp/RtmpHOwLvV/file1f7730d51d57.csv      standard   20
+#>                           output_file source_format rows
+#> 1 /tmp/RtmpHj0t8v/file1d4a6762ccc.csv      standard   20
 ```
