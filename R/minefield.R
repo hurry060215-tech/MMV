@@ -22,6 +22,7 @@
 }
 
 .mmviz_build_minefield_group_plot <- function(df_group, group_label, field_geo, cfg, style) {
+  mmviz_assert_density_data(df_group, sprintf("Minefield group `%s`", group_label))
   labels <- list(legend_density = mmviz_label("legend_density"))
   bg_col <- cfg$background_color %||% style$palette$bg_minefield
   guide_col <- cfg$guide_color %||% style$palette$guide
@@ -110,10 +111,15 @@
 #' Plot minefield heatmap
 #'
 #' @param input CSV file path or standardized data frame.
-#' @param cfg Configuration list.
+#' @param cfg Named configuration list. Common options are `style_mode`,
+#'   `plot_mode` (`"heatmap_only"` or `"heatmap_with_trajectory"`),
+#'   `overlay_trajectory`, `group_order`, `panel_per_row`, and `out_file`.
 #'
 #' @return A ggplot object.
 #' @export
+#' @examples
+#' path <- system.file("templates", "minefield_template.csv", package = "MMV")
+#' plot_minefield(path, cfg = list(style_mode = "builtin"))
 plot_minefield <- function(input, cfg = list()) {
   data <- if (is.character(input) && length(input) == 1) {
     read_mmviz_csv(input, task = "minefield")
@@ -121,6 +127,7 @@ plot_minefield <- function(input, cfg = list()) {
     mmviz_validate_data(input, task = "minefield")
   }
   cfg <- mmviz_merge_cfg(mmviz_default_cfg("minefield"), cfg)
+  cfg <- mmviz_validate_cfg("minefield", cfg)
 
   data <- .mmviz_apply_python_backend(data, task = "minefield")
   style <- theme_mmviz(mode = cfg$style_mode)

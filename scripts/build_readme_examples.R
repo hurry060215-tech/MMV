@@ -1,7 +1,9 @@
-r_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
-invisible(lapply(r_files, source))
+if (!requireNamespace("pkgload", quietly = TRUE)) {
+  stop("Install development dependency `pkgload` before running this script.")
+}
+pkgload::load_all(".", quiet = TRUE, compile = FALSE)
 
-fig_dir <- file.path("inst", "examples", "figures")
+fig_dir <- file.path("man", "figures")
 if (!dir.exists(fig_dir)) {
   dir.create(fig_dir, recursive = TRUE, showWarnings = FALSE)
 }
@@ -17,7 +19,7 @@ convert_mmviz_csv(
 )
 
 # Water maze example figure.
-plot_watermaze(
+invisible(plot_watermaze(
   std_csv,
   cfg = list(
     style_mode = "thisplot",
@@ -25,10 +27,10 @@ plot_watermaze(
     panel_per_row = 4,
     out_file = file.path(fig_dir, "watermaze_demo.png")
   )
-)
+))
 
 # Minefield example figure.
-plot_minefield(
+invisible(plot_minefield(
   file.path("inst", "templates", "minefield_template.csv"),
   cfg = list(
     style_mode = "thisplot",
@@ -36,7 +38,7 @@ plot_minefield(
     panel_per_row = 2,
     out_file = file.path(fig_dir, "minefield_demo.png")
   )
-)
+))
 
 cat("Generated README example figures:\n")
 cat(normalizePath(file.path(fig_dir, "watermaze_demo.png")), "\n")

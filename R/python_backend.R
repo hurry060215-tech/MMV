@@ -1,13 +1,25 @@
 #' Enable or disable optional Python backend
 #'
 #' This package is R-first. Python is optional and accessed via reticulate.
+#' The backend hook is experimental: an external module must provide
+#' `postprocess_track(data, task)` or `postprocess(data, task)`. See the online
+#' documentation and the linked backend-contract issue before production use.
 #'
 #' @param enable Logical, whether to enable python hooks.
 #' @param module Optional Python module name. If NULL, uses `mmviz_backend`.
 #'
 #' @return (invisibly) backend state list.
 #' @export
+#' @examples
+#' \dontrun{
+#' use_python_backend(TRUE, module = "mmviz_backend")
+#' }
 use_python_backend <- function(enable = FALSE, module = NULL) {
+  .Deprecated(
+    old = "use_python_backend",
+    new = "plot_mmviz",
+    package = "MMV"
+  )
   .mmviz_state$python_enabled <- isTRUE(enable)
   if (is.null(module) || !nzchar(trimws(as.character(module)[1]))) {
     .mmviz_state$python_module <- NULL

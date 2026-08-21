@@ -2,3 +2,8 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^scripts$
+^LICENSE\.md$
+^outputs$
+^Rplots\.pdf$
+^MMV_PRODUCT_AUDIT_2026-08-21\.md$

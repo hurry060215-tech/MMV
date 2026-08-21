@@ -1,6 +1,7 @@
 # MMV
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-245f73.svg)](https://github.com/hurry060215-tech/MMV/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-245f73.svg)](LICENSE.md)
+[![R-CMD-check](https://github.com/hurry060215-tech/MMV/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hurry060215-tech/MMV/actions/workflows/R-CMD-check.yaml)
 [![GitHub Pages](https://img.shields.io/badge/docs-pkgdown-2f7d6d.svg)](https://hurry060215-tech.github.io/MMV/)
 
 R-first toolkit for automatic visualization of **water maze** and **minefield** trajectory tasks.
@@ -15,13 +16,13 @@ MMV focuses on:
 
 | Water Maze | Minefield |
 |---|---|
-| ![Water Maze Demo](inst/examples/figures/watermaze_demo.png) | ![Minefield Demo](inst/examples/figures/minefield_demo.png) |
+| ![Water Maze Demo](man/figures/watermaze_demo.png) | ![Minefield Demo](man/figures/minefield_demo.png) |
 
 Real legacy-file examples (your raw coordinate style):
 
 | SAH (Legacy CSV) | NM (Legacy CSV) |
 |---|---|
-| ![SAH Real Demo](inst/examples/figures/watermaze_sah4_real.png) | ![NM Real Demo](inst/examples/figures/watermaze_nm5_real.png) |
+| ![SAH Real Demo](man/figures/watermaze_sah4_real.png) | ![NM Real Demo](man/figures/watermaze_nm5_real.png) |
 
 ## Install
 
@@ -31,18 +32,35 @@ remotes::install_github("hurry060215-tech/MMV")
 library(MMV)
 ```
 
-Optional dependencies:
+Optional dependency for YAML manifests:
 ```r
-install.packages(c("ggplot2", "dplyr", "cowplot", "testthat", "yaml"))
+install.packages("yaml")
+# thisplot is optional; MMV automatically falls back to its builtin theme.
 ```
 
 ## Quick Demo (Copy and Run)
 
 ```r
+library(MMV)
+
+# Easiest first run: create data templates, a manifest, and a runner.
+mmviz_init("my-mmv-project")
+# Then run: Rscript my-mmv-project/run_mmviz.R
+
 wm_csv <- system.file("templates", "watermaze_template.csv", package = "MMV")
 mf_csv <- system.file("templates", "minefield_template.csv", package = "MMV")
 
-# 1) Convert to standard schema (recommended)
+# 1) Read and plot immediately
+plot_mmviz(
+  wm_csv,
+  task = "watermaze",
+  cfg = list(
+    style_mode = "builtin",
+    out_file = "outputs/watermaze_demo.png"
+  )
+)
+
+# 2) Convert to the standard schema when you want a reusable clean CSV
 cnv <- convert_mmviz_csv(
   path = wm_csv,
   out_path = "outputs/watermaze_template_standard.csv",
@@ -50,35 +68,34 @@ cnv <- convert_mmviz_csv(
   overwrite = TRUE
 )
 
-# 2) Water maze (line-gradient trajectory, non-gradient background)
+# 3) Plot the converted file
 plot_watermaze(
   cnv$output_file,
   cfg = list(
-    style_mode = "thisplot",
+    style_mode = "builtin",
     plot_mode = "line_gradient",
     out_file = "outputs/watermaze_demo.png"
   )
 )
 
-# 3) Minefield (heatmap + optional trajectory overlay)
+# 4) Minefield (heatmap + optional trajectory overlay)
 plot_minefield(
   mf_csv,
   cfg = list(
-    style_mode = "thisplot",
+    style_mode = "builtin",
     overlay_trajectory = TRUE,
     out_file = "outputs/minefield_demo.png"
   )
 )
 ```
 
-Development-mode example script:
+Run the installed end-to-end example:
 ```r
-source("inst/examples/example_usage.R")
+source(system.file("examples", "example_usage.R", package = "MMV"))
 ```
 
-Helper scripts:
-- `inst/examples/example_usage.R`: minimal end-to-end example.
-- `scripts/run_examples.R`: template conversion + watermaze + minefield + batch.
+Repository contributors can run `source("scripts/run_examples.R")` for template
+conversion, water-maze, minefield, and batch examples from a source checkout.
 
 ## Regenerate README Example Figures
 
@@ -87,8 +104,8 @@ source("scripts/build_readme_examples.R")
 ```
 
 This script writes:
-- `inst/examples/figures/watermaze_demo.png`
-- `inst/examples/figures/minefield_demo.png`
+- `man/figures/watermaze_demo.png`
+- `man/figures/minefield_demo.png`
 
 ## Input Schema
 
@@ -104,10 +121,26 @@ Optional columns:
 - `time_sec`
 - `event`
 
-Legacy coordinate-stream CSV is also supported (for example: `"233,135","233,135",...`).
+Legacy coordinate-stream CSV is also supported as quoted coordinate pairs (for
+example, `"233,135","233,135",...`) or a headerless two-column numeric CSV.
+Signed, decimal, and scientific-notation coordinates are accepted.
+
+## Batch Manifests
+
+A CSV or YAML manifest needs `task` and `input` fields. Relative input paths are
+resolved from the manifest file's directory. Every row returns an `ok` or
+`error` status, so one bad file does not stop the remaining jobs.
+
+```r
+manifest <- system.file("templates", "manifest_template.csv", package = "MMV")
+result <- plot_batch(manifest, out_dir = "outputs/batch")
+print(result)
+```
 
 ## Main Functions
 
+- `mmviz_init(path = "MMV-project")`
+- `plot_mmviz(input, task, cfg = list(), out_file = NULL)`
 - `convert_mmviz_csv(path, out_path = NULL, task = "watermaze", overwrite = FALSE)`
 - `convert_mmviz_folder(input_dir, out_dir, task = "watermaze", ...)`
 - `plot_watermaze(input, cfg = list())`
@@ -121,20 +154,47 @@ Legacy coordinate-stream CSV is also supported (for example: `"233,135","233,135
 
 Default is `thisplot` with automatic fallback.
 
+## Optional Python Hook
+
+`use_python_backend()` is deprecated in v0.2.0. It remains available only for
+compatibility with existing projects and will be removed in v0.3.0. Pure-R
+plotting through `plot_mmviz()`, `plot_watermaze()`, and `plot_minefield()` is
+the supported product path. Existing Python users should migrate their
+post-processing into an explicit R preprocessing step before the v0.3.0
+removal.
+
+## Windows and Unicode paths
+
+MMV supports spaces and Unicode filenames when R is running with a UTF-8-capable
+Windows locale. If tests or conversion report that no CSV files were found for
+Chinese filenames, inspect the current process environment:
+
+```powershell
+Get-ChildItem Env:LANG,Env:LC_ALL,Env:LC_CTYPE
+```
+
+Some shells incorrectly export the POSIX value `C.UTF-8`, which Windows R does
+not recognize. Clear it for the current PowerShell process, then rerun R:
+
+```powershell
+Remove-Item Env:LANG,Env:LC_ALL,Env:LC_CTYPE -ErrorAction SilentlyContinue
+Rscript -e "print(Sys.getlocale())"
+```
+
+This changes only the current process. MMV does not set global locale values or
+silently change user environment variables.
+
 ## License
 
-MMV is released under the MIT License. See [`LICENSE`](https://github.com/hurry060215-tech/MMV/blob/main/LICENSE) for the full license text.
+MMV is released under the MIT License. See [`LICENSE.md`](LICENSE.md) for the
+full license text.
 
-## GitHub Publish Helper
+## Contributor release flow
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/publish_mmv_github.ps1
-```
-
-If your current folder has git lock/permission issues, use the temp-path publisher:
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/publish_mmv_from_temp.ps1
-```
+Changes are published through a feature branch and pull request. The protected
+`main` branch runs R-CMD-check, coverage, and pkgdown before merge. A maintainer
+creates a version tag only after the merged `main` build is green; the tag
+workflow creates the source package and GitHub Release.
 
 ## pkgdown Setup
 
@@ -142,7 +202,5 @@ powershell -ExecutionPolicy Bypass -File scripts/publish_mmv_from_temp.ps1
 - `_pkgdown.yml`
 - `.github/workflows/pkgdown.yaml`
 
-Before first deployment:
-1. Replace `YOUR_GITHUB_USERNAME` in `_pkgdown.yml`.
-2. Push to `main`.
-3. In GitHub repository settings, enable Pages from `gh-pages`.
+The workflow regenerates documentation and deploys `main` to the `gh-pages`
+branch. GitHub Pages must use that branch in the repository settings.

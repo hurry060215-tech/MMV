@@ -18,6 +18,9 @@
     x_q <- stats::quantile(data$x, probs = c(0.005, 0.995), na.rm = TRUE)
     y_q <- stats::quantile(data$y, probs = c(0.005, 0.995), na.rm = TRUE)
     r <- 0.52 * max(diff(x_q), diff(y_q))
+    if (!is.finite(r) || r <= 0) {
+      r <- max(abs(c(x_q, y_q)), 1) * 0.05
+    }
   }
 
   list(cx = cx, cy = cy, radius = r)
@@ -28,6 +31,9 @@
   guide_col <- cfg$guide_color %||% style$palette$guide
   track_w <- as.numeric(cfg$track_linewidth %||% 0.85)
   mode <- tolower(as.character(cfg$plot_mode %||% "line_gradient"))
+  if (mode == "heatmap") {
+    mmviz_assert_density_data(df_group, sprintf("Water-maze group `%s`", group_label))
+  }
   labels <- list(legend_max = mmviz_label("legend_max"))
   guides <- mmviz_make_pool_guides(geo$cx, geo$cy, geo$radius)
 
@@ -159,10 +165,15 @@
 #' Plot water maze trajectories
 #'
 #' @param input CSV file path or standardized data frame.
-#' @param cfg Configuration list.
+#' @param cfg Named configuration list. Common options are `style_mode`,
+#'   `plot_mode` (`"line_gradient"` or `"heatmap"`), `group_order`,
+#'   `panel_per_row`, `pool_center`, `pool_radius`, and `out_file`.
 #'
 #' @return A ggplot object.
 #' @export
+#' @examples
+#' path <- system.file("templates", "watermaze_template.csv", package = "MMV")
+#' plot_watermaze(path, cfg = list(style_mode = "builtin"))
 plot_watermaze <- function(input, cfg = list()) {
   data <- if (is.character(input) && length(input) == 1) {
     read_mmviz_csv(input, task = "watermaze")
@@ -170,6 +181,7 @@ plot_watermaze <- function(input, cfg = list()) {
     mmviz_validate_data(input, task = "watermaze")
   }
   cfg <- mmviz_merge_cfg(mmviz_default_cfg("watermaze"), cfg)
+  cfg <- mmviz_validate_cfg("watermaze", cfg)
 
   data <- .mmviz_apply_python_backend(data, task = "watermaze")
   style <- theme_mmviz(mode = cfg$style_mode)

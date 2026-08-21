@@ -1,0 +1,5 @@
+fixture,rows,x_min,x_max,y_min,y_max
+watermaze__legacy_nm.csv,3601,27,525,41,526
+watermaze__legacy_nmp.csv,1916,94,518,14,522
+watermaze__legacy_sah.csv,3599,15,470,11,531
+watermaze__legacy_sham.csv,1916,96,508,25,481

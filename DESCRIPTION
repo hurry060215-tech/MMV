@@ -1,12 +1,12 @@
 Package: MMV
 Type: Package
 Title: Visualization Toolkit for Water Maze and Minefield Tasks
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     c(person(given = "Haoliang",
              family = "Zhu",
              role = c("aut", "cre"),
-             email = "haoliang@example.com"))
+             email = "hurry060215@gmail.com"))
 Description: R-first plotting toolkit for behavior trajectory visualization.
     It supports two independent tasks (water maze and minefield) with a
     common CSV schema, automatic plotting, batch rendering, and thisplot-aware
@@ -17,16 +17,20 @@ URL: https://hurry060215-tech.github.io/MMV/,
 BugReports: https://github.com/hurry060215-tech/MMV/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports:
     cowplot,
     dplyr,
     ggplot2,
-    grDevices,
     stats,
     utils
 Suggests:
+    knitr,
+    reticulate,
+    rmarkdown,
     testthat (>= 3.0.0),
     thisplot,
+    vdiffr,
     yaml
 Config/testthat/edition: 3
+VignetteBuilder: knitr

@@ -12,7 +12,7 @@ template:
 
 navbar:
   structure:
-    left: [reference, license]
+    left: [articles, reference, license]
     right: [search, github]
   components:
     license:
@@ -28,6 +28,10 @@ home:
   description: R-first toolkit for water maze and minefield trajectory visualization.
 
 reference:
+  - title: Getting started
+    contents:
+      - mmviz_init
+      - plot_mmviz
   - title: Main plotting API
     contents:
       - plot_watermaze
@@ -43,3 +47,8 @@ reference:
       - read_mmviz_csv
       - convert_mmviz_csv
       - convert_mmviz_folder
+
+articles:
+  - title: Get started
+    contents:
+      - getting-started

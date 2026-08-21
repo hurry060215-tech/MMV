@@ -3,3 +3,5 @@
 .mmviz_state$python_module <- NULL
 
 `%>%` <- dplyr::`%>%`
+
+utils::globalVariables(".data")

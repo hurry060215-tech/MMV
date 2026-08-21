@@ -1,8 +1,10 @@
 # One-file quick run for legacy SAH CSV:
 # convert first, then plot from standardized CSV.
 
-r_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
-invisible(lapply(r_files, source))
+if (!requireNamespace("pkgload", quietly = TRUE)) {
+  stop("Install development dependency `pkgload` before running this script.")
+}
+pkgload::load_all(".", quiet = TRUE, compile = FALSE)
 
 csv_candidates <- list.files("..", pattern = "^sah--4.*\\.csv$", full.names = TRUE)
 if (length(csv_candidates) == 0) {

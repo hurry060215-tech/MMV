@@ -17,10 +17,17 @@
 #' @param style_pkg Primary style package, default `thisplot`.
 #' @param extra_pkgs Optional character vector of extra package names.
 #' @param function_map Named list: package -> character vector of function names.
-#' @param attach_packages Whether to attach packages to search path.
+#' @param attach_packages Whether to attach packages to the search path. The
+#'   default is `FALSE` to avoid changing the user's R session.
 #'
 #' @return A list with loaded packages, extracted functions, and a runtime env.
 #' @export
+#' @examples
+#' runtime <- load_visual_runtime(
+#'   style_pkg = "stats",
+#'   function_map = list(stats = "median")
+#' )
+#' runtime$extracted_functions[["stats::median"]](1:5)
 load_visual_runtime <- function(
   style_pkg = "thisplot",
   extra_pkgs = NULL,

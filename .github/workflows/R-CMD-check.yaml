@@ -1,0 +1,64 @@
+name: R-CMD-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: windows-latest, r: release}
+          - {os: macos-latest, r: release}
+          - {os: ubuntu-latest, r: release}
+          - {os: windows-latest, r: oldrel}
+
+    name: ${{ matrix.config.os }} (R ${{ matrix.config.r }})
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      _R_CHECK_FORCE_SUGGESTS_: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ matrix.config.r }}
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+
+  coverage:
+    name: coverage (>= 80%)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::covr
+          needs: check
+      - name: Check coverage threshold
+        shell: bash
+        run: |
+          Rscript -e 'x <- covr::package_coverage(type = "tests", quiet = TRUE); p <- covr::percent_coverage(x); cat(sprintf("Coverage: %.2f%%\n", p)); if (p < 80) stop("Coverage is below the required 80% threshold.")'
