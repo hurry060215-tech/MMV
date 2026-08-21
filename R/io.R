@@ -1,5 +1,5 @@
 .mmviz_guess_group_from_filename <- function(path) {
-  stem <- tolower(mmviz_safe_file_stem(path))
+  stem <- tolower(.mmviz_infer_subject_from_path(path))
   if (grepl("^sham", stem)) return("Sham")
   if (grepl("^sah", stem)) return("SAH")
   if (grepl("^nmp", stem)) return("NMP")
@@ -7,6 +7,17 @@
   if (grepl("^control", stem)) return("Control")
   if (grepl("^model", stem)) return("Model")
   stem
+}
+
+.mmviz_infer_subject_from_path <- function(path) {
+  stem <- mmviz_safe_file_stem(path)
+  # The author's acquisition export prefixes the subject with a Chinese
+  # description. Remove only known export labels so unrelated Unicode names
+  # remain untouched.
+  stem <- sub("^(watermaze|minefield)__", "", stem, ignore.case = TRUE, perl = TRUE)
+  stem <- sub("^轨迹坐标点", "", stem, perl = TRUE)
+  stem <- sub("^(trajectory[_ -]*coordinates?|track[_ -]*coordinates?)[_ -]*", "", stem, ignore.case = TRUE, perl = TRUE)
+  if (!nzchar(stem)) "plot" else stem
 }
 
 .mmviz_parse_legacy_track_csv <- function(path) {
@@ -66,7 +77,7 @@
   }
 
   df <- data.frame(
-    subject_id = mmviz_safe_file_stem(path),
+    subject_id = .mmviz_infer_subject_from_path(path),
     group = .mmviz_guess_group_from_filename(path),
     trial_id = "trial_1",
     frame = seq_len(nrow(mat)),

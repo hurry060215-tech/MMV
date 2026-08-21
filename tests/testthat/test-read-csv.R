@@ -47,6 +47,22 @@ test_that("legacy parsing supports signed and decimal coordinates", {
   expect_equal(dat$y, c(20.25, 21.75))
 })
 
+test_that("Chinese trajectory export prefixes are removed during inference", {
+  fixture_dir <- test_path("fixtures", "real")
+  files <- c(
+    file.path(fixture_dir, "watermaze__轨迹坐标点sham7.csv"),
+    file.path(fixture_dir, "watermaze__轨迹坐标点sham71.csv")
+  )
+  skip_if_not(all(file.exists(files)), "Chinese trajectory fixtures are not available.")
+
+  dat7 <- read_mmviz_csv(files[[1]], task = "watermaze")
+  dat71 <- read_mmviz_csv(files[[2]], task = "watermaze")
+  expect_equal(unique(dat7$subject_id), "sham7")
+  expect_equal(unique(dat7$group), "Sham")
+  expect_equal(unique(dat71$subject_id), "sham71")
+  expect_equal(unique(dat71$group), "Sham")
+})
+
 test_that("invalid standard data is not mistaken for a legacy stream", {
   f <- tempfile(fileext = ".csv")
   on.exit(unlink(f), add = TRUE)
