@@ -6,7 +6,7 @@ Authors@R:
     c(person(given = "Haoliang",
              family = "Zhu",
              role = c("aut", "cre"),
-             email = "haoliang@example.com"))
+             email = "hurry060215@gmail.com"))
 Description: R-first plotting toolkit for behavior trajectory visualization.
     It supports two independent tasks (water maze and minefield) with a
     common CSV schema, automatic plotting, batch rendering, and thisplot-aware
@@ -17,15 +17,15 @@ URL: https://hurry060215-tech.github.io/MMV/,
 BugReports: https://github.com/hurry060215-tech/MMV/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports:
     cowplot,
     dplyr,
     ggplot2,
-    grDevices,
     stats,
     utils
 Suggests:
+    reticulate,
     testthat (>= 3.0.0),
     thisplot,
     yaml

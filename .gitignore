@@ -9,9 +9,10 @@
 *.png
 *.pdf
 outputs/
+docs/
 
 .mmv_git/
 
 mmv_gitdata/
 
-!inst/examples/figures/*.png
+!man/figures/*.png

@@ -1,40 +1,38 @@
-# Minimal runnable examples for MMV (development mode)
+# Minimal runnable example for an installed copy of MMV.
+library(MMV)
 
-r_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
-invisible(lapply(r_files, source))
-
-if (!dir.exists("outputs")) {
-  dir.create("outputs", recursive = TRUE, showWarnings = FALSE)
-}
+output_dir <- file.path(tempdir(), "MMV-example")
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+water_csv <- system.file("templates", "watermaze_template.csv", package = "MMV")
+mine_csv <- system.file("templates", "minefield_template.csv", package = "MMV")
 
 # 1) Convert (legacy/standard) CSV into unified schema.
 cnv <- convert_mmviz_csv(
-  path = "inst/templates/watermaze_template.csv",
-  out_path = "outputs/watermaze_template_standard.csv",
+  path = water_csv,
+  out_path = file.path(output_dir, "watermaze_template_standard.csv"),
   task = "watermaze",
   overwrite = TRUE
 )
 print(cnv)
 
 # 2) Water maze line-gradient trajectory.
-plot_watermaze(
-  "outputs/watermaze_template_standard.csv",
+invisible(plot_watermaze(
+  cnv$output_file,
   cfg = list(
-    style_mode = "thisplot",
+    style_mode = "builtin",
     plot_mode = "line_gradient",
-    out_file = "outputs/watermaze_demo.png"
+    out_file = file.path(output_dir, "watermaze_demo.png")
   )
-)
+))
 
 # 3) Minefield heatmap + trajectory overlay.
-plot_minefield(
-  "inst/templates/minefield_template.csv",
+invisible(plot_minefield(
+  mine_csv,
   cfg = list(
-    style_mode = "thisplot",
+    style_mode = "builtin",
     overlay_trajectory = TRUE,
-    out_file = "outputs/minefield_demo.png"
+    out_file = file.path(output_dir, "minefield_demo.png")
   )
-)
+))
 
-cat("Saved: ", normalizePath("outputs/watermaze_demo.png"), "\n", sep = "")
-cat("Saved: ", normalizePath("outputs/minefield_demo.png"), "\n", sep = "")
+cat("Example outputs: ", normalizePath(output_dir), "\n", sep = "")

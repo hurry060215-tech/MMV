@@ -36,6 +36,43 @@ test_that("read_mmviz_csv supports legacy coordinate stream", {
   expect_true(nrow(dat) >= 2)
 })
 
+test_that("legacy parsing supports signed and decimal coordinates", {
+  f <- tempfile(fileext = ".csv")
+  on.exit(unlink(f), add = TRUE)
+
+  writeChar("\"-10.5,20.25\",\"-9.5,21.75\"", f, eos = NULL, useBytes = TRUE)
+  dat <- read_mmviz_csv(f, task = "watermaze")
+
+  expect_equal(dat$x, c(-10.5, -9.5))
+  expect_equal(dat$y, c(20.25, 21.75))
+})
+
+test_that("invalid standard data is not mistaken for a legacy stream", {
+  f <- tempfile(fileext = ".csv")
+  on.exit(unlink(f), add = TRUE)
+
+  writeLines(c(
+    "subject_id,group,trial_id,x,y",
+    "s1,Sham,t1,10,20",
+    "s1,Sham,t1,11,21"
+  ), f)
+
+  expect_error(read_mmviz_csv(f), "missing required columns: frame")
+})
+
+test_that("required coordinate values must be finite", {
+  f <- tempfile(fileext = ".csv")
+  on.exit(unlink(f), add = TRUE)
+
+  writeLines(c(
+    "subject_id,group,trial_id,frame,x,y",
+    "s1,Sham,t1,1,10,20",
+    "s1,Sham,t1,2,,21"
+  ), f)
+
+  expect_error(read_mmviz_csv(f), "column `x` must contain only finite values")
+})
+
 test_that("convert_mmviz_csv writes standardized output", {
   src <- tempfile(fileext = ".csv")
   out <- tempfile(fileext = ".csv")
@@ -70,4 +107,28 @@ test_that("convert_mmviz_folder converts multiple csv files", {
   expect_equal(nrow(res), 2)
   expect_true(all(res$status == "ok"))
   expect_true(all(file.exists(res$output_file)))
+})
+
+test_that("recursive conversion preserves subfolders and Unicode stems", {
+  in_dir <- tempfile(pattern = "mmviz_in_")
+  out_dir <- tempfile(pattern = "mmviz_out_")
+  dir.create(file.path(in_dir, "day1"), recursive = TRUE)
+  dir.create(file.path(in_dir, "day2"), recursive = TRUE)
+  on.exit(unlink(c(in_dir, out_dir), recursive = TRUE, force = TRUE), add = TRUE)
+
+  value <- "\"1,1\",\"2,2\""
+  writeChar(value, file.path(in_dir, "day1", "小鼠.csv"), eos = NULL, useBytes = TRUE)
+  writeChar(value, file.path(in_dir, "day2", "小鼠.csv"), eos = NULL, useBytes = TRUE)
+
+  res <- convert_mmviz_folder(
+    input_dir = in_dir,
+    out_dir = out_dir,
+    recursive = TRUE,
+    overwrite = TRUE
+  )
+
+  expect_equal(nrow(res), 2)
+  expect_true(all(res$status == "ok"))
+  expect_true(file.exists(file.path(out_dir, "day1", "小鼠_standard.csv")))
+  expect_true(file.exists(file.path(out_dir, "day2", "小鼠_standard.csv")))
 })

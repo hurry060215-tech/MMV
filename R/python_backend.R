@@ -7,6 +7,11 @@
 #'
 #' @return (invisibly) backend state list.
 #' @export
+#' @examples
+#' use_python_backend(FALSE)
+#' \dontrun{
+#' use_python_backend(TRUE, module = "mmviz_backend")
+#' }
 use_python_backend <- function(enable = FALSE, module = NULL) {
   .mmviz_state$python_enabled <- isTRUE(enable)
   if (is.null(module) || !nzchar(trimws(as.character(module)[1]))) {

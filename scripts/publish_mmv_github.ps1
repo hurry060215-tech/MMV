@@ -146,29 +146,10 @@ function Ensure-GitIgnoreRule {
 }
 
 function Reset-BrokenGitRepo {
-  if (Test-Path ".git") {
-    Write-Host "Found broken .git metadata. Recreating repository..."
-    Invoke-CmdQuiet -Command "attrib -h -s .git" | Out-Null
-    Invoke-CmdQuiet -Command "attrib -h -s .git\* /s /d" | Out-Null
-    Invoke-CmdQuiet -Command "del /f /q .git\config.lock" | Out-Null
-    Remove-Item -LiteralPath ".git" -Recurse -Force -ErrorAction SilentlyContinue
-    if (Test-Path ".git") {
-      Invoke-CmdQuiet -Command "rmdir /s /q .git" | Out-Null
-    }
-  }
-  if (Test-Path ".git") {
-    Write-Host "Unable to remove broken .git folder. Using alternate metadata directory $($script:AltGitDir)."
-    Init-AltGitRepo
-    Ensure-GitIgnoreRule -Rule "$($script:AltGitDir)/"
-    return
-  }
-  $script:GitPrefix = @()
-  $initCode = Invoke-Git -Args @("init", "-b", $Branch) -Quiet -AllowFailure
-  if ($initCode -ne 0) {
-    Write-Host "Default git init failed. Using alternate metadata directory $($script:AltGitDir)."
-    Init-AltGitRepo
-    Ensure-GitIgnoreRule -Rule "$($script:AltGitDir)/"
-  }
+  throw (
+    "The current .git metadata is invalid. MMV will not delete or recreate " +
+    "repository metadata. Run scripts/publish_mmv_from_temp.ps1 instead."
+  )
 }
 
 Clear-ProxyEnvForGit
@@ -181,10 +162,22 @@ try {
     throw "Repository is still invalid after reinitialization."
   }
 
-  # Avoid "detected dubious ownership" in mixed-ownership Windows folders.
-  Invoke-Git -Args @("config", "--global", "--add", "safe.directory", $projectRoot) -AllowFailure | Out-Null
+  $currentBranch = (Invoke-GitOutput -Args @("branch", "--show-current")) -join ""
+  if (-not $currentBranch -or $currentBranch -ne $Branch) {
+    throw "Current branch is '$currentBranch'; expected '$Branch'. Switch branches explicitly before publishing."
+  }
 
-  Invoke-Git -Args @("add", ".github", ".gitignore", "DESCRIPTION", "LICENSE", "NAMESPACE", "R", "README.md", "_pkgdown.yml", "inst", "scripts", "tests") | Out-Null
+  Invoke-Git -Args @(
+    "add", "--", ".github", ".gitignore", "DESCRIPTION", "LICENSE",
+    "LICENSE.md", "NEWS.md", "NAMESPACE", "R", "README.md", "_pkgdown.yml",
+    "inst", "man", "scripts", "tests"
+  ) | Out-Null
+
+  $diffCode = Invoke-Git -Args @("diff", "--cached", "--quiet") -Quiet -AllowFailure
+  if ($diffCode -eq 0) {
+    Write-Host "No changes to commit. Repository is already up to date."
+    return
+  }
 
   $hasCommit = $false
   $headCode = Invoke-Git -Args @("rev-parse", "--verify", "HEAD") -Quiet -AllowFailure
@@ -195,7 +188,7 @@ try {
   if (-not $hasCommit) {
     Invoke-Git -Args @("commit", "-m", "feat: initial MMV release (R-first watermaze/minefield visualization)") | Out-Null
   } else {
-    Invoke-Git -Args @("commit", "-m", "chore: update MMV package", "--allow-empty") | Out-Null
+    Invoke-Git -Args @("commit", "-m", "chore: update MMV package") | Out-Null
   }
 
   $originUrl = "https://github.com/$RepoOwner/$RepoName.git"
@@ -214,7 +207,10 @@ try {
   if (-not $hasOrigin) {
     Invoke-Git -Args @("remote", "add", "origin", $originUrl) | Out-Null
   } else {
-    Invoke-Git -Args @("remote", "set-url", "origin", $originUrl) | Out-Null
+    $allowedOrigins = @($originUrl, "git@github.com:$RepoOwner/$RepoName.git")
+    if ($existingOrigin -notin $allowedOrigins) {
+      throw "Existing origin '$existingOrigin' does not match $RepoOwner/$RepoName. Refusing to rewrite it."
+    }
   }
 
   # Force no proxy and HTTP/1.1 for flaky networks.

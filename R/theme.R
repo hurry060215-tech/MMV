@@ -83,13 +83,19 @@
   NULL
 }
 
-#' Return plotting theme and palette for mazeMineViz
+#' Return the plotting theme and palette used by MMV
 #'
 #' @param mode Theme mode, `thisplot` or `builtin`.
 #'
 #' @return A list with `mode`, `palette`, and `gg_theme`.
 #' @export
+#' @examples
+#' theme <- theme_mmviz("builtin")
+#' names(theme)
 theme_mmviz <- function(mode = c("thisplot", "builtin")) {
+  if (length(mode) < 1L || is.na(mode[1])) {
+    stop("`mode` must be one of: thisplot, builtin.", call. = FALSE)
+  }
   mode <- tolower(as.character(mode)[1])
   if (!mode %in% c("thisplot", "builtin")) {
     stop("`mode` must be one of: thisplot, builtin.", call. = FALSE)

@@ -2,3 +2,7 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^scripts$
+^LICENSE\.md$
+^outputs$
+^Rplots\.pdf$

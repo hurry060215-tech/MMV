@@ -1,5 +1,7 @@
-r_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
-invisible(lapply(r_files, source))
+if (!requireNamespace("pkgload", quietly = TRUE)) {
+  stop("Install development dependency `pkgload` before running this script.")
+}
+pkgload::load_all(".", quiet = TRUE, compile = FALSE)
 
 if (!dir.exists("outputs")) {
   dir.create("outputs", recursive = TRUE)
@@ -14,24 +16,24 @@ convert_mmviz_csv(
 )
 
 # 2) Water maze
-plot_watermaze(
+invisible(plot_watermaze(
   "outputs/watermaze_template_standard.csv",
   cfg = list(
     style_mode = "thisplot",
     plot_mode = "line_gradient",
     out_file = "outputs/watermaze_line_gradient.png"
   )
-)
+))
 
 # 3) Minefield
-plot_minefield(
+invisible(plot_minefield(
   "inst/templates/minefield_template.csv",
   cfg = list(
     style_mode = "thisplot",
     overlay_trajectory = TRUE,
     out_file = "outputs/minefield_overlay.png"
   )
-)
+))
 
 # 4) Batch
 res <- plot_batch(

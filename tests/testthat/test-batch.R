@@ -32,3 +32,29 @@ test_that("plot_batch runs tasks from csv manifest", {
   expect_true(all(res$status == "ok"))
   expect_true(all(file.exists(file.path(out_dir, c("water.png", "mine.png")))))
 })
+
+test_that("plot_batch resolves relative inputs and isolates bad rows", {
+  td <- tempfile(pattern = "mmviz_batch_")
+  dir.create(td, recursive = TRUE)
+  on.exit(unlink(td, recursive = TRUE, force = TRUE), add = TRUE)
+
+  input <- file.path(td, "water.csv")
+  manifest <- file.path(td, "manifest.csv")
+  out_dir <- file.path(td, "out")
+  writeLines(c(
+    "subject_id,group,trial_id,frame,x,y",
+    "s1,Sham,t1,1,100,100",
+    "s1,Sham,t1,2,110,120"
+  ), input)
+  writeLines(c(
+    "task,input,output_file,style_mode,plot_mode,overlay_trajectory",
+    "watermaze,water.csv,water.png,builtin,line_gradient,",
+    "unknown,missing.csv,,,,"
+  ), manifest)
+
+  res <- plot_batch(manifest, out_dir)
+
+  expect_equal(res$status, c("ok", "error"))
+  expect_true(file.exists(file.path(out_dir, "water.png")))
+  expect_match(res$message[2], "task.*watermaze, minefield")
+})

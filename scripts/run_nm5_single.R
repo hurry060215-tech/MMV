@@ -1,8 +1,10 @@
 # One-file quick run for your current legacy coordinate CSV:
 # ../nm--5轨迹坐标点.csv
 
-r_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
-invisible(lapply(r_files, source))
+if (!requireNamespace("pkgload", quietly = TRUE)) {
+  stop("Install development dependency `pkgload` before running this script.")
+}
+pkgload::load_all(".", quiet = TRUE, compile = FALSE)
 
 input_csv <- file.path("..", "nm--5轨迹坐标点.csv")
 if (!file.exists(input_csv)) {
