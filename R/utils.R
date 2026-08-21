@@ -274,6 +274,9 @@ mmviz_save_plot <- function(plot_obj, cfg) {
   if (!dir.exists(out_dir)) {
     dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
   }
+  if (!dir.exists(out_dir)) {
+    stop(sprintf("Cannot create output directory: %s", out_dir), call. = FALSE)
+  }
 
   width <- as.numeric(cfg$figure_width %||% 10)
   height <- as.numeric(cfg$figure_height %||% 6)

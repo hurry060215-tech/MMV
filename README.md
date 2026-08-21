@@ -32,9 +32,9 @@ remotes::install_github("hurry060215-tech/MMV")
 library(MMV)
 ```
 
-Optional dependencies:
+Optional dependency for YAML manifests:
 ```r
-install.packages(c("yaml", "reticulate"))
+install.packages("yaml")
 # thisplot is optional; MMV automatically falls back to its builtin theme.
 ```
 
@@ -156,27 +156,45 @@ Default is `thisplot` with automatic fallback.
 
 ## Optional Python Hook
 
-The Python post-processing hook is disabled by default and remains
-**experimental**. It requires an external module implementing
-`postprocess_track(data, task)` or `postprocess(data, task)`. Pure-R plotting is
-the supported default; follow [issue #5](https://github.com/hurry060215-tech/MMV/issues/5)
-for the versioned backend contract before relying on it in production.
+`use_python_backend()` is deprecated in v0.2.0. It remains available only for
+compatibility with existing projects and will be removed in v0.3.0. Pure-R
+plotting through `plot_mmviz()`, `plot_watermaze()`, and `plot_minefield()` is
+the supported product path. Existing Python users should migrate their
+post-processing into an explicit R preprocessing step before the v0.3.0
+removal.
+
+## Windows and Unicode paths
+
+MMV supports spaces and Unicode filenames when R is running with a UTF-8-capable
+Windows locale. If tests or conversion report that no CSV files were found for
+Chinese filenames, inspect the current process environment:
+
+```powershell
+Get-ChildItem Env:LANG,Env:LC_ALL,Env:LC_CTYPE
+```
+
+Some shells incorrectly export the POSIX value `C.UTF-8`, which Windows R does
+not recognize. Clear it for the current PowerShell process, then rerun R:
+
+```powershell
+Remove-Item Env:LANG,Env:LC_ALL,Env:LC_CTYPE -ErrorAction SilentlyContinue
+Rscript -e "print(Sys.getlocale())"
+```
+
+This changes only the current process. MMV does not set global locale values or
+silently change user environment variables.
 
 ## License
 
 MMV is released under the MIT License. See [`LICENSE.md`](LICENSE.md) for the
 full license text.
 
-## GitHub Publish Helper
+## Contributor release flow
 
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/publish_mmv_github.ps1
-```
-
-If your current folder has git lock/permission issues, use the temp-path publisher:
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/publish_mmv_from_temp.ps1
-```
+Changes are published through a feature branch and pull request. The protected
+`main` branch runs R-CMD-check, coverage, and pkgdown before merge. A maintainer
+creates a version tag only after the merged `main` build is green; the tag
+workflow creates the source package and GitHub Release.
 
 ## pkgdown Setup
 

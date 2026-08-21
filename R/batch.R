@@ -79,11 +79,60 @@ plot_batch <- function(manifest, out_dir, cfg = list()) {
     stop(sprintf("Cannot create output directory: %s", out_dir), call. = FALSE)
   }
 
+  # Detect explicit output collisions before rendering. Invalid rows remain
+  # row-level errors; they must not prevent independent rows from running.
+  duplicate_messages <- vector("list", nrow(manifest_df))
+  seen_outputs <- integer(0)
+  if ("output_file" %in% names(manifest_df)) {
+    for (i in seq_len(nrow(manifest_df))) {
+      out_name <- tryCatch(
+        mmviz_parse_scalar(manifest_df$output_file[[i]]),
+        error = function(e) NULL
+      )
+      if (is.null(out_name)) next
+      candidate <- tryCatch(
+        if (mmviz_is_absolute_path(as.character(out_name))) {
+          as.character(out_name)
+        } else {
+          file.path(out_dir, as.character(out_name))
+        },
+        error = function(e) NULL
+      )
+      if (is.null(candidate)) next
+      key <- tolower(normalizePath(candidate, winslash = "/", mustWork = FALSE))
+      previous <- match(key, names(seen_outputs))
+      if (is.na(previous)) {
+        seen_outputs <- c(seen_outputs, i)
+        names(seen_outputs)[length(seen_outputs)] <- key
+      } else {
+        duplicate_messages[[i]] <- sprintf(
+          "Manifest row %d output path duplicates row %d: %s. Use a unique `output_file`.",
+          i,
+          seen_outputs[[previous]],
+          candidate
+        )
+      }
+    }
+  }
+
   results <- vector("list", nrow(manifest_df))
   for (i in seq_len(nrow(manifest_df))) {
     row <- manifest_df[i, , drop = FALSE]
     task_raw <- as.character(row$task[1])
     input_raw <- as.character(row$input[1])
+
+    if (!is.null(duplicate_messages[[i]])) {
+      results[[i]] <- data.frame(
+        row_id = i,
+        task = task_raw,
+        input = input_raw,
+        output_file = NA_character_,
+        status = "error",
+        message = duplicate_messages[[i]],
+        stringsAsFactors = FALSE
+      )
+      next
+    }
 
     results[[i]] <- tryCatch({
       task <- mmviz_normalize_task(task_raw)
@@ -113,7 +162,6 @@ plot_batch <- function(manifest, out_dir, cfg = list()) {
       } else {
         file.path(out_dir, out_name)
       }
-
       if (task == "watermaze") {
         plot_watermaze(input, cfg = row_cfg)
       } else {
@@ -139,7 +187,7 @@ plot_batch <- function(manifest, out_dir, cfg = list()) {
         input = input_raw,
         output_file = NA_character_,
         status = "error",
-        message = conditionMessage(e),
+        message = sprintf("Manifest row %d failed: %s", i, conditionMessage(e)),
         stringsAsFactors = FALSE
       )
     })

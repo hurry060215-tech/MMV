@@ -110,6 +110,10 @@ test_that("convert_mmviz_folder converts multiple csv files", {
 })
 
 test_that("recursive conversion preserves subfolders and Unicode stems", {
+  skip_if_not(
+    isTRUE(l10n_info()[["UTF-8"]]),
+    "Unicode filename regression requires an UTF-8-capable R locale."
+  )
   in_dir <- tempfile(pattern = "mmviz_in_")
   out_dir <- tempfile(pattern = "mmviz_out_")
   dir.create(file.path(in_dir, "day1"), recursive = TRUE)

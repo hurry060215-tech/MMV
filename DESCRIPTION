@@ -1,7 +1,7 @@
 Package: MMV
 Type: Package
 Title: Visualization Toolkit for Water Maze and Minefield Tasks
-Version: 0.1.0.9000
+Version: 0.2.0
 Authors@R: 
     c(person(given = "Haoliang",
              family = "Zhu",
@@ -30,6 +30,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     thisplot,
+    vdiffr,
     yaml
 Config/testthat/edition: 3
 VignetteBuilder: knitr

@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck any::devtools
+          needs: check
+
+      - name: Require real-data fixtures
+        shell: bash
+        run: |
+          test -d tests/testthat/fixtures/real
+          test -f tests/testthat/fixtures/real/README.md
+          test "$(find tests/testthat/fixtures/real -type f -name '*.csv' | wc -l)" -ge 3
+
+      - name: Build and check source package
+        shell: bash
+        run: |
+          R CMD build .
+          R CMD check MMV_*.tar.gz --no-manual --as-cran
+
+      - name: Clean-install smoke test
+        shell: bash
+        run: |
+          Rscript -e 'lib <- tempfile("mmv-release-lib-"); dir.create(lib); tar <- Sys.glob("MMV_*.tar.gz")[1]; install.packages(tar, lib = lib, repos = NULL, type = "source"); library(MMV, lib.loc = lib); p <- mmviz_init(tempfile("mmv-release-project-"), quiet = TRUE); stopifnot(all(plot_batch(p[["manifest"]], p[["output_dir"]])$status == "ok"))'
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release create "$GITHUB_REF_NAME" MMV_*.tar.gz --repo "$GITHUB_REPOSITORY" --title "MMV $GITHUB_REF_NAME" --generate-notes

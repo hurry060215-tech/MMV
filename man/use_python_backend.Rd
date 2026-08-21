@@ -21,7 +21,6 @@ The backend hook is experimental: an external module must provide
 documentation and the linked backend-contract issue before production use.
 }
 \examples{
-use_python_backend(FALSE)
 \dontrun{
 use_python_backend(TRUE, module = "mmviz_backend")
 }

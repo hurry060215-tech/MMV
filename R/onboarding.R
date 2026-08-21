@@ -44,15 +44,6 @@ mmviz_init <- function(path = "MMV-project", overwrite = FALSE, quiet = FALSE) {
     )
   }
 
-  for (directory in c(project_dir, data_dir, output_dir)) {
-    if (!dir.exists(directory)) {
-      dir.create(directory, recursive = TRUE, showWarnings = FALSE)
-    }
-    if (!dir.exists(directory)) {
-      stop(sprintf("Cannot create directory: %s", directory), call. = FALSE)
-    }
-  }
-
   water_template <- system.file(
     "templates",
     "watermaze_template.csv",
@@ -66,26 +57,79 @@ mmviz_init <- function(path = "MMV-project", overwrite = FALSE, quiet = FALSE) {
   if (!nzchar(water_template) || !nzchar(mine_template)) {
     stop("Installed MMV templates could not be found.", call. = FALSE)
   }
-  copied <- file.copy(
-    c(water_template, mine_template),
-    managed[1:2],
-    overwrite = overwrite
-  )
-  if (!all(copied)) {
-    stop("Could not copy one or more MMV data templates.", call. = FALSE)
+
+  # Keep a byte-for-byte backup of managed files so a failed copy/write never
+  # leaves a half-generated starter project behind. Unrelated files and
+  # pre-existing directories are intentionally not touched.
+  backups <- list()
+  for (file in existing) {
+    size <- file.info(file)$size
+    backups[[file]] <- if (isTRUE(size > 0)) {
+      readBin(file, what = "raw", n = size)
+    } else {
+      raw(0)
+    }
+  }
+  created_files <- character(0)
+  created_dirs <- character(0)
+  rollback <- function() {
+    for (file in created_files) {
+      if (file.exists(file)) unlink(file, force = TRUE)
+    }
+    for (file in names(backups)) {
+      writeBin(backups[[file]], file)
+    }
+    for (directory in rev(created_dirs)) {
+      if (dir.exists(directory) && length(list.files(directory, all.files = TRUE)) <= 2L) {
+        unlink(directory, recursive = TRUE, force = TRUE)
+      }
+    }
   }
 
-  writeLines(
-    c(
-      "task,input,output_file,style_mode,plot_mode,overlay_trajectory",
-      "watermaze,data/watermaze.csv,watermaze.png,builtin,line_gradient,FALSE",
-      "minefield,data/minefield.csv,minefield.png,builtin,heatmap_only,TRUE"
-    ),
-    managed[3],
-    useBytes = TRUE
-  )
-  writeLines(.mmviz_starter_script(), managed[4], useBytes = TRUE)
-  writeLines(.mmviz_starter_readme(), managed[5], useBytes = TRUE)
+  tryCatch({
+    for (directory in c(project_dir, data_dir, output_dir)) {
+      if (!dir.exists(directory)) {
+        dir.create(directory, recursive = TRUE, showWarnings = FALSE)
+        created_dirs <- c(created_dirs, directory)
+      }
+      if (!dir.exists(directory)) {
+        stop(sprintf("Cannot create directory: %s", directory), call. = FALSE)
+      }
+    }
+
+    copied <- vapply(seq_along(managed[1:2]), function(i) {
+      ok <- file.copy(
+        c(water_template, mine_template)[[i]],
+        managed[1:2][[i]],
+        overwrite = overwrite
+      )
+      if (isTRUE(ok) && !managed[1:2][[i]] %in% existing) {
+        created_files <<- c(created_files, managed[1:2][[i]])
+      }
+      ok
+    }, logical(1))
+    if (!all(copied)) {
+      stop("Could not copy one or more MMV data templates.", call. = FALSE)
+    }
+
+    writeLines(
+      c(
+        "task,input,output_file,style_mode,plot_mode,overlay_trajectory",
+        "watermaze,data/watermaze.csv,watermaze.png,builtin,line_gradient,FALSE",
+        "minefield,data/minefield.csv,minefield.png,builtin,heatmap_only,TRUE"
+      ),
+      managed[3],
+      useBytes = TRUE
+    )
+    if (!managed[3] %in% existing) created_files <- c(created_files, managed[3])
+    writeLines(.mmviz_starter_script(), managed[4], useBytes = TRUE)
+    if (!managed[4] %in% existing) created_files <- c(created_files, managed[4])
+    writeLines(.mmviz_starter_readme(), managed[5], useBytes = TRUE)
+    if (!managed[5] %in% existing) created_files <- c(created_files, managed[5])
+  }, error = function(e) {
+    rollback()
+    stop(sprintf("Could not initialize MMV project: %s", conditionMessage(e)), call. = FALSE)
+  })
 
   project_dir_display <- normalizePath(
     project_dir,

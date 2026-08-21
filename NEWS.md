@@ -1,3 +1,16 @@
+# MMV 0.2.0
+
+- Stabilized one-command onboarding with rollback on partial initialization
+  failures and clearer output-directory errors.
+- Added manifest duplicate-output detection and row-numbered batch failures.
+- Added Windows UTF-8 troubleshooting and locale-aware Unicode path tests.
+- Deprecated the optional Python hook for compatibility; pure-R plotting remains
+  the supported path and the hook is scheduled for removal in 0.3.0.
+- Added real-data fixture and geometry-regression hooks, pending author-provided
+  anonymized files and redistribution permission.
+- Reworked CI and pkgdown publishing around pull requests, coverage, and tagged
+  releases; direct-push publisher scripts are no longer supported.
+
 # MMV 0.1.0.9000
 
 - Added `mmviz_init()` for one-command starter projects and `plot_mmviz()` as

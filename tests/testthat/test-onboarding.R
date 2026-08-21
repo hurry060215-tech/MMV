@@ -34,6 +34,15 @@ test_that("mmviz_init refuses accidental overwrite and preserves other files", {
   expect_equal(readLines(sentinel), "keep")
 })
 
+test_that("mmviz_init leaves a file target untouched when directories cannot be created", {
+  target <- tempfile(pattern = "MMV-existing-file-")
+  writeLines("keep", target)
+  on.exit(unlink(target, force = TRUE), add = TRUE)
+
+  expect_error(mmviz_init(target, quiet = TRUE), "Could not initialize MMV project")
+  expect_equal(readLines(target), "keep")
+})
+
 test_that("plot_mmviz delegates both tasks and supports out_file", {
   water <- system.file("templates", "watermaze_template.csv", package = "MMV")
   mine <- system.file("templates", "minefield_template.csv", package = "MMV")
