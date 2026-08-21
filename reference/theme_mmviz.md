@@ -1,6 +1,6 @@
-# Return plotting theme and palette for mazeMineViz
+# Return the plotting theme and palette used by MMV
 
-Return plotting theme and palette for mazeMineViz
+Return the plotting theme and palette used by MMV
 
 ## Usage
 
@@ -17,3 +17,11 @@ theme_mmviz(mode = c("thisplot", "builtin"))
 ## Value
 
 A list with `mode`, `palette`, and `gg_theme`.
+
+## Examples
+
+``` r
+theme <- theme_mmviz("builtin")
+names(theme)
+#> [1] "mode"     "palette"  "gg_theme"
+```

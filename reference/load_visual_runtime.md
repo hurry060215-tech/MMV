@@ -31,8 +31,20 @@ load_visual_runtime(
 
 - attach_packages:
 
-  Whether to attach packages to search path.
+  Whether to attach packages to the search path. The default is `FALSE`
+  to avoid changing the user's R session.
 
 ## Value
 
 A list with loaded packages, extracted functions, and a runtime env.
+
+## Examples
+
+``` r
+runtime <- load_visual_runtime(
+  style_pkg = "stats",
+  function_map = list(stats = "median")
+)
+runtime$extracted_functions[["stats::median"]](1:5)
+#> [1] 3
+```

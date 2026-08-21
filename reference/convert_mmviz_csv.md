@@ -60,3 +60,17 @@ convert_mmviz_csv(
 ## Value
 
 A one-row data frame with conversion metadata.
+
+## Examples
+
+``` r
+source <- system.file("templates", "watermaze_template.csv", package = "MMV")
+output <- tempfile(fileext = ".csv")
+convert_mmviz_csv(source, output, overwrite = TRUE)
+#>        task
+#> 1 watermaze
+#>                                                             input_file
+#> 1 /home/runner/work/_temp/Library/MMV/templates/watermaze_template.csv
+#>                            output_file source_format rows
+#> 1 /tmp/RtmpHOwLvV/file1f7730d51d57.csv      standard   20
+```

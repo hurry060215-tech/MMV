@@ -37,7 +37,8 @@ convert_mmviz_folder(
 
 - recursive:
 
-  Whether to search input_dir recursively.
+  Whether to search `input_dir` recursively. Subdirectory structure is
+  preserved under `out_dir` to prevent filename collisions.
 
 - overwrite:
 
@@ -55,3 +56,11 @@ convert_mmviz_folder(
 ## Value
 
 A data frame summarizing conversion status for each file.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+convert_mmviz_folder("raw_tracks", "standard_tracks", recursive = TRUE)
+} # }
+```

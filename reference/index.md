@@ -1,5 +1,12 @@
 # Package index
 
+## Getting started
+
+- [`mmviz_init()`](https://hurry060215-tech.github.io/MMV/reference/mmviz_init.md)
+  : Initialize a ready-to-run MMV project
+- [`plot_mmviz()`](https://hurry060215-tech.github.io/MMV/reference/plot_mmviz.md)
+  : Plot an MMV task through one unified entry point
+
 ## Main plotting API
 
 - [`plot_watermaze()`](https://hurry060215-tech.github.io/MMV/reference/plot_watermaze.md)
@@ -12,7 +19,7 @@
 ## Styling and runtime
 
 - [`theme_mmviz()`](https://hurry060215-tech.github.io/MMV/reference/theme_mmviz.md)
-  : Return plotting theme and palette for mazeMineViz
+  : Return the plotting theme and palette used by MMV
 - [`load_visual_runtime()`](https://hurry060215-tech.github.io/MMV/reference/load_visual_runtime.md)
   : Load full visualization runtime and extract package functions
 - [`use_python_backend()`](https://hurry060215-tech.github.io/MMV/reference/use_python_backend.md)

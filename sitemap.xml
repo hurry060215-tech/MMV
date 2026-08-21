@@ -1,14 +1,22 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://hurry060215-tech.github.io/MMV/404.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/LICENSE-text.html</loc></url>
+<url><loc>https://hurry060215-tech.github.io/MMV/LICENSE.html</loc></url>
+<url><loc>https://hurry060215-tech.github.io/MMV/MMV_PRODUCT_AUDIT_2026-08-21.html</loc></url>
+<url><loc>https://hurry060215-tech.github.io/MMV/articles/getting-started.html</loc></url>
+<url><loc>https://hurry060215-tech.github.io/MMV/articles/index.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/authors.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/index.html</loc></url>
+<url><loc>https://hurry060215-tech.github.io/MMV/news/index.html</loc></url>
+<url><loc>https://hurry060215-tech.github.io/MMV/reference/MMV-package.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/reference/convert_mmviz_csv.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/reference/convert_mmviz_folder.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/reference/index.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/reference/load_visual_runtime.html</loc></url>
+<url><loc>https://hurry060215-tech.github.io/MMV/reference/mmviz_init.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/reference/plot_batch.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/reference/plot_minefield.html</loc></url>
+<url><loc>https://hurry060215-tech.github.io/MMV/reference/plot_mmviz.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/reference/plot_watermaze.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/reference/read_mmviz_csv.html</loc></url>
 <url><loc>https://hurry060215-tech.github.io/MMV/reference/theme_mmviz.html</loc></url>

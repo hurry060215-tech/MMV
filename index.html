@@ -24,7 +24,7 @@
 
     <a class="navbar-brand me-2" href="index.html">MMV</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,7 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="articles/index.html">Articles</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="LICENSE-text.html">License</a></li>
       </ul>
@@ -51,7 +52,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="mmv">MMV<a class="anchor" aria-label="anchor" href="#mmv"></a>
 </h1></div>
-<p><a href="https://github.com/hurry060215-tech/MMV/blob/main/LICENSE" class="external-link"><img src="https://img.shields.io/badge/License-MIT-245f73.svg" alt="License: MIT"></a> <a href="https://hurry060215-tech.github.io/MMV/"><img src="https://img.shields.io/badge/docs-pkgdown-2f7d6d.svg" alt="GitHub Pages"></a></p>
+<p><a href="LICENSE.html"><img src="https://img.shields.io/badge/License-MIT-245f73.svg" alt="License: MIT"></a> <a href="https://github.com/hurry060215-tech/MMV/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/hurry060215-tech/MMV/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://hurry060215-tech.github.io/MMV/"><img src="https://img.shields.io/badge/docs-pkgdown-2f7d6d.svg" alt="GitHub Pages"></a></p>
 <p>R-first toolkit for automatic visualization of <strong>water maze</strong> and <strong>minefield</strong> trajectory tasks.</p>
 <p>MMV focuses on: - a unified CSV schema - explicit legacy-to-standard CSV conversion - two direct plotting functions - <code>thisplot</code>-style theme integration with builtin fallback</p>
 <div class="section level2">
@@ -67,8 +68,8 @@
 <th>Minefield</th>
 </tr></thead>
 <tbody><tr>
-<td><img src="inst/examples/figures/watermaze_demo.png" alt="Water Maze Demo"></td>
-<td><img src="inst/examples/figures/minefield_demo.png" alt="Minefield Demo"></td>
+<td><img src="reference/figures/watermaze_demo.png" alt="Water Maze Demo"></td>
+<td><img src="reference/figures/minefield_demo.png" alt="Minefield Demo"></td>
 </tr></tbody>
 </table>
 <p>Real legacy-file examples (your raw coordinate style):</p>
@@ -82,8 +83,8 @@
 <th>NM (Legacy CSV)</th>
 </tr></thead>
 <tbody><tr>
-<td><img src="inst/examples/figures/watermaze_sah4_real.png" alt="SAH Real Demo"></td>
-<td><img src="inst/examples/figures/watermaze_nm5_real.png" alt="NM Real Demo"></td>
+<td><img src="reference/figures/watermaze_sah4_real.png" alt="SAH Real Demo"></td>
+<td><img src="reference/figures/watermaze_nm5_real.png" alt="NM Real Demo"></td>
 </tr></tbody>
 </table>
 </div>
@@ -94,18 +95,35 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"hurry060215-tech/MMV"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://hurry060215-tech.github.io/MMV/">MMV</a></span><span class="op">)</span></span></code></pre></div>
-<p>Optional dependencies:</p>
+<p>Optional dependency for YAML manifests:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, <span class="st">"dplyr"</span>, <span class="st">"cowplot"</span>, <span class="st">"testthat"</span>, <span class="st">"yaml"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"yaml"</span><span class="op">)</span></span>
+<span><span class="co"># thisplot is optional; MMV automatically falls back to its builtin theme.</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quick-demo-copy-and-run">Quick Demo (Copy and Run)<a class="anchor" aria-label="anchor" href="#quick-demo-copy-and-run"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wm_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"templates"</span>, <span class="st">"watermaze_template.csv"</span>, package <span class="op">=</span> <span class="st">"MMV"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://hurry060215-tech.github.io/MMV/">MMV</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Easiest first run: create data templates, a manifest, and a runner.</span></span>
+<span><span class="fu"><a href="reference/mmviz_init.html">mmviz_init</a></span><span class="op">(</span><span class="st">"my-mmv-project"</span><span class="op">)</span></span>
+<span><span class="co"># Then run: Rscript my-mmv-project/run_mmviz.R</span></span>
+<span></span>
+<span><span class="va">wm_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"templates"</span>, <span class="st">"watermaze_template.csv"</span>, package <span class="op">=</span> <span class="st">"MMV"</span><span class="op">)</span></span>
 <span><span class="va">mf_csv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"templates"</span>, <span class="st">"minefield_template.csv"</span>, package <span class="op">=</span> <span class="st">"MMV"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 1) Convert to standard schema (recommended)</span></span>
+<span><span class="co"># 1) Read and plot immediately</span></span>
+<span><span class="fu"><a href="reference/plot_mmviz.html">plot_mmviz</a></span><span class="op">(</span></span>
+<span>  <span class="va">wm_csv</span>,</span>
+<span>  task <span class="op">=</span> <span class="st">"watermaze"</span>,</span>
+<span>  cfg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    style_mode <span class="op">=</span> <span class="st">"builtin"</span>,</span>
+<span>    out_file <span class="op">=</span> <span class="st">"outputs/watermaze_demo.png"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2) Convert to the standard schema when you want a reusable clean CSV</span></span>
 <span><span class="va">cnv</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/convert_mmviz_csv.html">convert_mmviz_csv</a></span><span class="op">(</span></span>
 <span>  path <span class="op">=</span> <span class="va">wm_csv</span>,</span>
 <span>  out_path <span class="op">=</span> <span class="st">"outputs/watermaze_template_standard.csv"</span>,</span>
@@ -113,48 +131,59 @@
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 2) Water maze (line-gradient trajectory, non-gradient background)</span></span>
+<span><span class="co"># 3) Plot the converted file</span></span>
 <span><span class="fu"><a href="reference/plot_watermaze.html">plot_watermaze</a></span><span class="op">(</span></span>
 <span>  <span class="va">cnv</span><span class="op">$</span><span class="va">output_file</span>,</span>
 <span>  cfg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    style_mode <span class="op">=</span> <span class="st">"thisplot"</span>,</span>
+<span>    style_mode <span class="op">=</span> <span class="st">"builtin"</span>,</span>
 <span>    plot_mode <span class="op">=</span> <span class="st">"line_gradient"</span>,</span>
 <span>    out_file <span class="op">=</span> <span class="st">"outputs/watermaze_demo.png"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 3) Minefield (heatmap + optional trajectory overlay)</span></span>
+<span><span class="co"># 4) Minefield (heatmap + optional trajectory overlay)</span></span>
 <span><span class="fu"><a href="reference/plot_minefield.html">plot_minefield</a></span><span class="op">(</span></span>
 <span>  <span class="va">mf_csv</span>,</span>
 <span>  cfg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    style_mode <span class="op">=</span> <span class="st">"thisplot"</span>,</span>
+<span>    style_mode <span class="op">=</span> <span class="st">"builtin"</span>,</span>
 <span>    overlay_trajectory <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    out_file <span class="op">=</span> <span class="st">"outputs/minefield_demo.png"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Development-mode example script:</p>
+<p>Run the installed end-to-end example:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"inst/examples/example_usage.R"</span><span class="op">)</span></span></code></pre></div>
-<p>Helper scripts: - <code>inst/examples/example_usage.R</code>: minimal end-to-end example. - <code>scripts/run_examples.R</code>: template conversion + watermaze + minefield + batch.</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"example_usage.R"</span>, package <span class="op">=</span> <span class="st">"MMV"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Repository contributors can run <code>source("scripts/run_examples.R")</code> for template conversion, water-maze, minefield, and batch examples from a source checkout.</p>
 </div>
 <div class="section level2">
 <h2 id="regenerate-readme-example-figures">Regenerate README Example Figures<a class="anchor" aria-label="anchor" href="#regenerate-readme-example-figures"></a>
 </h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"scripts/build_readme_examples.R"</span><span class="op">)</span></span></code></pre></div>
-<p>This script writes: - <code>inst/examples/figures/watermaze_demo.png</code> - <code>inst/examples/figures/minefield_demo.png</code></p>
+<p>This script writes: - <code>man/figures/watermaze_demo.png</code> - <code>man/figures/minefield_demo.png</code></p>
 </div>
 <div class="section level2">
 <h2 id="input-schema">Input Schema<a class="anchor" aria-label="anchor" href="#input-schema"></a>
 </h2>
 <p>Required columns: - <code>subject_id</code> - <code>group</code> - <code>trial_id</code> - <code>frame</code> - <code>x</code> - <code>y</code></p>
 <p>Optional columns: - <code>time_sec</code> - <code>event</code></p>
-<p>Legacy coordinate-stream CSV is also supported (for example: <code>"233,135","233,135",...</code>).</p>
+<p>Legacy coordinate-stream CSV is also supported as quoted coordinate pairs (for example, <code>"233,135","233,135",...</code>) or a headerless two-column numeric CSV. Signed, decimal, and scientific-notation coordinates are accepted.</p>
+</div>
+<div class="section level2">
+<h2 id="batch-manifests">Batch Manifests<a class="anchor" aria-label="anchor" href="#batch-manifests"></a>
+</h2>
+<p>A CSV or YAML manifest needs <code>task</code> and <code>input</code> fields. Relative input paths are resolved from the manifest file’s directory. Every row returns an <code>ok</code> or <code>error</code> status, so one bad file does not stop the remaining jobs.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">manifest</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"templates"</span>, <span class="st">"manifest_template.csv"</span>, package <span class="op">=</span> <span class="st">"MMV"</span><span class="op">)</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_batch.html">plot_batch</a></span><span class="op">(</span><span class="va">manifest</span>, out_dir <span class="op">=</span> <span class="st">"outputs/batch"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="main-functions">Main Functions<a class="anchor" aria-label="anchor" href="#main-functions"></a>
 </h2>
 <ul>
+<li><code>mmviz_init(path = "MMV-project")</code></li>
+<li><code>plot_mmviz(input, task, cfg = list(), out_file = NULL)</code></li>
 <li><code>convert_mmviz_csv(path, out_path = NULL, task = "watermaze", overwrite = FALSE)</code></li>
 <li><code>convert_mmviz_folder(input_dir, out_dir, task = "watermaze", ...)</code></li>
 <li><code>plot_watermaze(input, cfg = list())</code></li>
@@ -174,22 +203,35 @@
 <p>Default is <code>thisplot</code> with automatic fallback.</p>
 </div>
 <div class="section level2">
-<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+<h2 id="optional-python-hook">Optional Python Hook<a class="anchor" aria-label="anchor" href="#optional-python-hook"></a>
 </h2>
-<p>MMV is released under the MIT License. See <a href="https://github.com/hurry060215-tech/MMV/blob/main/LICENSE" class="external-link"><code>LICENSE</code></a> for the full license text.</p>
+<p><code><a href="reference/use_python_backend.html">use_python_backend()</a></code> is deprecated in v0.2.0. It remains available only for compatibility with existing projects and will be removed in v0.3.0. Pure-R plotting through <code><a href="reference/plot_mmviz.html">plot_mmviz()</a></code>, <code><a href="reference/plot_watermaze.html">plot_watermaze()</a></code>, and <code><a href="reference/plot_minefield.html">plot_minefield()</a></code> is the supported product path. Existing Python users should migrate their post-processing into an explicit R preprocessing step before the v0.3.0 removal.</p>
 </div>
 <div class="section level2">
-<h2 id="github-publish-helper">GitHub Publish Helper<a class="anchor" aria-label="anchor" href="#github-publish-helper"></a>
+<h2 id="windows-and-unicode-paths">Windows and Unicode paths<a class="anchor" aria-label="anchor" href="#windows-and-unicode-paths"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>powershell <span class="op">-</span>ExecutionPolicy Bypass <span class="op">-</span>File scripts<span class="op">/</span>publish_mmv_github<span class="op">.</span><span class="fu">ps1</span></span></code></pre></div>
-<p>If your current folder has git lock/permission issues, use the temp-path publisher:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>powershell <span class="op">-</span>ExecutionPolicy Bypass <span class="op">-</span>File scripts<span class="op">/</span>publish_mmv_from_temp<span class="op">.</span><span class="fu">ps1</span></span></code></pre></div>
+<p>MMV supports spaces and Unicode filenames when R is running with a UTF-8-capable Windows locale. If tests or conversion report that no CSV files were found for Chinese filenames, inspect the current process environment:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">Get-ChildItem</span> Env<span class="op">:</span>LANG<span class="op">,</span>Env<span class="op">:</span>LC_ALL<span class="op">,</span>Env<span class="op">:</span>LC_CTYPE</span></code></pre></div>
+<p>Some shells incorrectly export the POSIX value <code>C.UTF-8</code>, which Windows R does not recognize. Clear it for the current PowerShell process, then rerun R:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">Remove-Item</span> Env<span class="op">:</span>LANG<span class="op">,</span>Env<span class="op">:</span>LC_ALL<span class="op">,</span>Env<span class="op">:</span>LC_CTYPE <span class="op">-</span>ErrorAction SilentlyContinue</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>Rscript <span class="op">-</span>e <span class="st">"print(Sys.getlocale())"</span></span></code></pre></div>
+<p>This changes only the current process. MMV does not set global locale values or silently change user environment variables.</p>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
+<p>MMV is released under the MIT License. See <a href="LICENSE.html"><code>LICENSE.md</code></a> for the full license text.</p>
+</div>
+<div class="section level2">
+<h2 id="contributor-release-flow">Contributor release flow<a class="anchor" aria-label="anchor" href="#contributor-release-flow"></a>
+</h2>
+<p>Changes are published through a feature branch and pull request. The protected <code>main</code> branch runs R-CMD-check, coverage, and pkgdown before merge. A maintainer creates a version tag only after the merged <code>main</code> build is green; the tag workflow creates the source package and GitHub Release.</p>
 </div>
 <div class="section level2">
 <h2 id="pkgdown-setup">pkgdown Setup<a class="anchor" aria-label="anchor" href="#pkgdown-setup"></a>
 </h2>
 <p><code>pkgdown</code> is not automatic by GitHub itself. This repo includes: - <code>_pkgdown.yml</code> - <code>.github/workflows/pkgdown.yaml</code></p>
-<p>Before first deployment: 1. Replace <code>YOUR_GITHUB_USERNAME</code> in <code>_pkgdown.yml</code>. 2. Push to <code>main</code>. 3. In GitHub repository settings, enable Pages from <code>gh-pages</code>.</p>
+<p>The workflow regenerates documentation and deploys <code>main</code> to the <code>gh-pages</code> branch. GitHub Pages must use that branch in the repository settings.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -203,9 +245,8 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
 
@@ -235,7 +276,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>
