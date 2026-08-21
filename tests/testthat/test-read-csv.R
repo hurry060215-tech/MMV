@@ -55,7 +55,8 @@ test_that("Chinese trajectory export prefixes are removed during inference", {
   )
   skip_if_not(all(file.exists(source_files)), "Chinese trajectory fixtures are not available.")
   skip_if_not(isTRUE(l10n_info()[["UTF-8"]]), "Chinese filename test requires an UTF-8-capable locale.")
-  files <- file.path(tempdir(), c("轨迹坐标点sham7.csv", "轨迹坐标点sham71.csv"))
+  acquisition_prefix <- intToUtf8(c(0x8F68, 0x8FF9, 0x5750, 0x6807, 0x70B9))
+  files <- file.path(tempdir(), paste0(acquisition_prefix, c("sham7.csv", "sham71.csv")))
   file.copy(source_files, files, overwrite = TRUE)
   on.exit(unlink(files, force = TRUE), add = TRUE)
 

@@ -11,11 +11,11 @@
 
 .mmviz_infer_subject_from_path <- function(path) {
   stem <- mmviz_safe_file_stem(path)
-  # The author's acquisition export prefixes the subject with a Chinese
-  # description. Remove only known export labels so unrelated Unicode names
-  # remain untouched.
+  # The author's acquisition export prefixes the subject with a known
+  # non-ASCII label. Build it at runtime so package source remains portable.
   stem <- sub("^(watermaze|minefield)__", "", stem, ignore.case = TRUE, perl = TRUE)
-  stem <- sub("^轨迹坐标点", "", stem, perl = TRUE)
+  acquisition_prefix <- intToUtf8(c(0x8F68, 0x8FF9, 0x5750, 0x6807, 0x70B9))
+  stem <- sub(paste0("^", acquisition_prefix), "", stem, perl = TRUE)
   stem <- sub("^(trajectory[_ -]*coordinates?|track[_ -]*coordinates?)[_ -]*", "", stem, ignore.case = TRUE, perl = TRUE)
   if (!nzchar(stem)) "plot" else stem
 }
