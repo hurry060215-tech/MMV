@@ -47,6 +47,27 @@ test_that("legacy parsing supports signed and decimal coordinates", {
   expect_equal(dat$y, c(20.25, 21.75))
 })
 
+test_that("Chinese trajectory export prefixes are removed during inference", {
+  fixture_dir <- test_path("fixtures", "real")
+  source_files <- c(
+    file.path(fixture_dir, "watermaze__legacy_nul_sham7.csv"),
+    file.path(fixture_dir, "watermaze__legacy_rows_sham71.csv")
+  )
+  skip_if_not(all(file.exists(source_files)), "Chinese trajectory fixtures are not available.")
+  skip_if_not(isTRUE(l10n_info()[["UTF-8"]]), "Chinese filename test requires an UTF-8-capable locale.")
+  acquisition_prefix <- intToUtf8(c(0x8F68, 0x8FF9, 0x5750, 0x6807, 0x70B9))
+  files <- file.path(tempdir(), paste0(acquisition_prefix, c("sham7.csv", "sham71.csv")))
+  file.copy(source_files, files, overwrite = TRUE)
+  on.exit(unlink(files, force = TRUE), add = TRUE)
+
+  dat7 <- read_mmviz_csv(files[[1]], task = "watermaze")
+  dat71 <- read_mmviz_csv(files[[2]], task = "watermaze")
+  expect_equal(unique(dat7$subject_id), "sham7")
+  expect_equal(unique(dat7$group), "Sham")
+  expect_equal(unique(dat71$subject_id), "sham71")
+  expect_equal(unique(dat71$group), "Sham")
+})
+
 test_that("invalid standard data is not mistaken for a legacy stream", {
   f <- tempfile(fileext = ".csv")
   on.exit(unlink(f), add = TRUE)

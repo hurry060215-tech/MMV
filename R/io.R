@@ -1,5 +1,5 @@
 .mmviz_guess_group_from_filename <- function(path) {
-  stem <- tolower(mmviz_safe_file_stem(path))
+  stem <- tolower(.mmviz_infer_subject_from_path(path))
   if (grepl("^sham", stem)) return("Sham")
   if (grepl("^sah", stem)) return("SAH")
   if (grepl("^nmp", stem)) return("NMP")
@@ -7,6 +7,17 @@
   if (grepl("^control", stem)) return("Control")
   if (grepl("^model", stem)) return("Model")
   stem
+}
+
+.mmviz_infer_subject_from_path <- function(path) {
+  stem <- mmviz_safe_file_stem(path)
+  # The author's acquisition export prefixes the subject with a known
+  # non-ASCII label. Build it at runtime so package source remains portable.
+  stem <- sub("^(watermaze|minefield)__", "", stem, ignore.case = TRUE, perl = TRUE)
+  acquisition_prefix <- intToUtf8(c(0x8F68, 0x8FF9, 0x5750, 0x6807, 0x70B9))
+  stem <- sub(paste0("^", acquisition_prefix), "", stem, perl = TRUE)
+  stem <- sub("^(trajectory[_ -]*coordinates?|track[_ -]*coordinates?)[_ -]*", "", stem, ignore.case = TRUE, perl = TRUE)
+  if (!nzchar(stem)) "plot" else stem
 }
 
 .mmviz_parse_legacy_track_csv <- function(path) {
@@ -66,7 +77,7 @@
   }
 
   df <- data.frame(
-    subject_id = mmviz_safe_file_stem(path),
+    subject_id = .mmviz_infer_subject_from_path(path),
     group = .mmviz_guess_group_from_filename(path),
     trial_id = "trial_1",
     frame = seq_len(nrow(mat)),
