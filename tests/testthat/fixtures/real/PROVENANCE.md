@@ -39,10 +39,11 @@ No minefield raw export has been located on the available D: or E: data roots.
 
 ## 1223 Chinese-prefix exports
 
-The `watermaze__轨迹坐标点sham7.csv` fixture preserves the embedded-NUL
+The `watermaze__legacy_nul_sham7.csv` fixture preserves the embedded-NUL
 coordinate stream from `1223/轨迹坐标点sham7.csv`; the `sham71` fixture is the
-newline-separated variant from `1223/轨迹坐标点sham71.csv`. Both contain 15,000
-points with x 4..185 and y 3..187. Their SHA-256 values are:
+newline-separated variant from `1223/轨迹坐标点sham71.csv`. Tests copy these
+ASCII-named fixtures to temporary Chinese filenames before parsing. Both
+contain 15,000 points with x 4..185 and y 3..187. Their SHA-256 values are:
 
-- `watermaze__轨迹坐标点sham7.csv`: `1F5E45B58426323CBD68D80E1E905B263949B8D94535D330452EBE4C22F47C38`
-- `watermaze__轨迹坐标点sham71.csv`: `C40AF5D9F8AA72868EEE62A1D6B8CDBE36E75E8A16601FE9FF69C4BAD8FB5147`
+- `watermaze__legacy_nul_sham7.csv`: `1F5E45B58426323CBD68D80E1E905B263949B8D94535D330452EBE4C22F47C38`
+- `watermaze__legacy_rows_sham71.csv`: `C40AF5D9F8AA72868EEE62A1D6B8CDBE36E75E8A16601FE9FF69C4BAD8FB5147`

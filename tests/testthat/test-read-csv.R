@@ -49,11 +49,15 @@ test_that("legacy parsing supports signed and decimal coordinates", {
 
 test_that("Chinese trajectory export prefixes are removed during inference", {
   fixture_dir <- test_path("fixtures", "real")
-  files <- c(
-    file.path(fixture_dir, "watermaze__轨迹坐标点sham7.csv"),
-    file.path(fixture_dir, "watermaze__轨迹坐标点sham71.csv")
+  source_files <- c(
+    file.path(fixture_dir, "watermaze__legacy_nul_sham7.csv"),
+    file.path(fixture_dir, "watermaze__legacy_rows_sham71.csv")
   )
-  skip_if_not(all(file.exists(files)), "Chinese trajectory fixtures are not available.")
+  skip_if_not(all(file.exists(source_files)), "Chinese trajectory fixtures are not available.")
+  skip_if_not(isTRUE(l10n_info()[["UTF-8"]]), "Chinese filename test requires an UTF-8-capable locale.")
+  files <- file.path(tempdir(), c("轨迹坐标点sham7.csv", "轨迹坐标点sham71.csv"))
+  file.copy(source_files, files, overwrite = TRUE)
+  on.exit(unlink(files, force = TRUE), add = TRUE)
 
   dat7 <- read_mmviz_csv(files[[1]], task = "watermaze")
   dat71 <- read_mmviz_csv(files[[2]], task = "watermaze")
